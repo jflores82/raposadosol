@@ -1,0 +1,9 @@
+del game.sms
+del main.ihx
+del main.asm
+del main.lk
+del main.lst
+del main.map
+del main.noi
+del main.rel
+del main.sym
