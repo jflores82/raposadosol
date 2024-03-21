@@ -7,7 +7,7 @@ using the [SMSDevkit by sverx](https://github.com/sverx/devkitSMS)
 levels designed using [Tiled](http://mapeditor.org)
 music done using [Furnace](https://tildearrow.org/furnace/)
 
-To build it, you need a working copy of SDCC and SMSDevkit, if you're in a windows enviroment, then all you need to do is run build.bat.
+To build it, you need a working copy of SDCC and SMSDevkit, with crt0, SMSLib and PSGlib inside their own folders alongside main.c, if you're in a windows enviroment, then all you need to do is run build.bat.
 Otherwise you might need to execute the commands yourself. 
 
 ## Instructions:
