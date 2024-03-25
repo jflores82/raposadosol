@@ -12,8 +12,9 @@
 #include "lib/SMSlib.h"
 #include "PSGlib/PSGlib.h"
 
-// Assets (gfx and music) //
-#include "bank2.h"
+#include "bank2.h" // Assets (gfx and music) //
+
+#include "vdp.h" // VDP Stuff //
 
 // Init Variables //
 unsigned int pl_x = 100; 			// player x axis position //
@@ -67,9 +68,8 @@ int wall_pellet_col = 0;
 
 unsigned int level_counter = 0;
 unsigned int frame_counter = 0;
-						
 
-// Tools //
+// Tools and Resets //
 int rand_num(int lb, int ub) {
 	int ret;
 	ret = rand() % (ub - lb + 1) + lb;
@@ -105,242 +105,6 @@ void reset_level_arrays(void) {
 	}
 }
 
-
-
-// VDP Stuff //
-void vdp_config(void) {
-	SMS_VDPturnOnFeature(VDPFEATURE_HIDEFIRSTCOL);
-	SMS_VRAMmemsetW(0, 0x0000, 16384); // CLEAR VRAM
-	// SMS_useFirstHalfTilesforSprites(true); // not used atm //
-}
-
-void vdp_vram_clear(void) { 
-	SMS_VRAMmemsetW(0, 0x0000, 16384); // Clear VRAM //
-}
-
-void vdp_clear_sprites(void) { 
-	SMS_initSprites();
-	SMS_copySpritestoSAT();
-}
-
-void reset_display(void) {
-	SMS_displayOff();
-	SMS_waitForVBlank();
-	SMS_displayOn();
-}
-
-// Sprite Tiles
-void level_load_sprites(void) {
-	SMS_loadPSGaidencompressedTiles(level_sprites_psgcompr, 256);
-	SMS_loadSpritePalette(level_sprites_bin);
-}
-
-// Player Related Stuff //
-void player_draw(void) {
-
-	unsigned int tile_1 = 2;
-	unsigned int tile_2 = 3;
-	unsigned int tile_3 = 4;
-	unsigned int tile_4 = 5;
-
-	// select which tiles to load as the ship main sprite (4 tiles), based on the direction you're going //
-	switch(pl_dir) { 
-		case 0: 
-			tile_1 = 256;
-			tile_2 = 257;
-			tile_3 = 269;
-			tile_4 = 270;
-		break;
-
-		case 1:
-			tile_1 = 262;
-			tile_2 = 263;
-			tile_3 = 275;
-			tile_4 = 276;
-		break;
-
-		case 2:
-			tile_1 = 258;
-			tile_2 = 259;
-			tile_3 = 271;
-			tile_4 = 272;
-		break;
-
-		case 3:
-			tile_1 = 260;
-			tile_2 = 261;
-			tile_3 = 273;
-			tile_4 = 274;
-		break;
-	}
-
-	// Add the correct tiles as sprites as the correct positions //
-	SMS_addSprite(pl_x,     pl_y,     tile_1);
-	SMS_addSprite(pl_x + 8, pl_y,     tile_2);
-	SMS_addSprite(pl_x,     pl_y + 8, tile_3);
-	SMS_addSprite(pl_x + 8, pl_y + 8, tile_4);
-
-}
-
-void player_movement(void) {
-	// set bounderies // 
-	if((pl_x < pl_lim_left) && (pl_dir == 1)) {
-		pl_spd = 0; 
-		return;
-	}
-	if((pl_y < pl_lim_top) && (pl_dir == 0)) {
-		pl_spd = 0;
-		return;
-	}
-
-	if((pl_x > pl_lim_right) && (pl_dir == 2)) {
-		pl_spd = 0; 
-		return;
-	}
-	if((pl_y > pl_lim_bottom) && (pl_dir == 3)) {
-		pl_spd = 0;
-		return;
-	}
-
-	// move //
-	if(pl_spd != 0 ) { 
-		switch(pl_dir) { 
-			case 0:
-				pl_y -= pl_spd;
-			break;
-
-			case 1:
-				pl_x -= pl_spd;
-			break;
-
-			case 2:
-				pl_x += pl_spd;
-			break;
-
-			case 3:
-				pl_y += pl_spd;
-			break;
-		}
-	}
-}
-
-// Controller Operations //
-void player_control(void) { 
-	unsigned int key=SMS_getKeysStatus();
-
-	if(key & PORT_A_KEY_UP && walls_col_dir != 0) 	{ pl_dir = 0; pl_spd = pl_spd_regular; }
-	if(key & PORT_A_KEY_DOWN && walls_col_dir != 3)	{ pl_dir = 3; pl_spd = pl_spd_regular; }
-	if(key & PORT_A_KEY_LEFT && walls_col_dir != 1)	{ pl_dir = 1; pl_spd = pl_spd_regular; }
-	if(key & PORT_A_KEY_RIGHT && walls_col_dir != 2)	{ pl_dir = 2; pl_spd = pl_spd_regular; }
-	if(key & PORT_A_KEY_1)	{ if(pl_spd != 0) { pl_spd = pl_spd_boost; } }
-}
-
-// Player-Pellet Collision //
-void player_pellet_collision(void) { 
-	int pel_x = 0; // just for easy reading //
-	int pel_y = 0;
-	for(int i = 0; i < level_pellet_num; i++) {
-		pel_x = pellets_x_y[i][0];
-		pel_y = pellets_x_y[i][1];
-
-		// collision bounderies //
-		if(	pl_x < pel_x + 8 &&
-    		pl_x + 16 > pel_x &&
-    		pl_y < pel_y + 8 &&
-    		pl_y + 16 > pel_y) {
-				pellets_x_y[i][0] = 200; //remove pellet//
-				pellets_x_y[i][1] = 200;
-				level_pellet_collected++;
-				PSGSFXPlay(pickup_psg,SFX_CHANNEL2);
-				score += 10;
-			}
-	}
-	
-}
-
-void wall_pellet_collision(int wall_x, int wall_y) { 
-	int pel_x = 0; // just for easy reading //
-	int pel_y = 0;
-	for(int i = 0; i < level_pellet_num; i++) {
-		pel_x = pellets_x_y[i][0];
-		pel_y = pellets_x_y[i][1];
-
-		// collision bounderies //
-		if(	wall_x < pel_x + 8 &&
-    		wall_x + 16 > pel_x &&
-    		wall_y < pel_y + 8 &&
-    		wall_y + 16 > pel_y) {
-				wall_pellet_col = 1;
-				return;
-			} 
-	}
-	wall_pellet_col = 0;	
-	return;
-}
-
-// Player-Enemy Shot Collision //
-void player_enshot_collision(void) {
-	// Left Shot //
-	if(	pl_x < en_s_l_x + 8 &&
-    	pl_x + 16 > en_s_l_x &&
-    	pl_y < en_s_l_y + 8 &&
-    	pl_y + 16 > en_s_l_y) 
-		{
-			lives--;
-			gamestate = 4;
-		}
-
-	// Right Shot //
-	if(	pl_x < en_s_r_x + 8 &&
-    	pl_x + 16 > en_s_r_x &&
-    	pl_y < en_s_r_y + 8 &&
-    	pl_y + 16 > en_s_r_y) 
-		{
-			lives--;
-			gamestate = 4;
-			
-		}
-}
-
-// Player-Walls Collision //
-void player_walls_collision(void) { 
-	int wall_x = 0; // just for easy reading //
-	int wall_y = 0;
-	walls_col_dir = -1;
-	for(int i = 0; i < level_walls_num; i++) {
-		wall_x = walls_x_y[i][0];
-		wall_y = walls_x_y[i][1];
-
-		// collision bounderies //
-		if(	pl_x < wall_x + 8 &&
-    		pl_x + 16 > wall_x &&
-    		pl_y < wall_y + 8 &&
-    		pl_y + 16 > wall_y) {
-				pl_spd = 0;
-				walls_col_dir = pl_dir;
-				switch(walls_col_dir) { 
-					case 0:
-						pl_y += 1; 
-					break;
-					
-					case 1:
-						pl_x += 1;
-					break;
-					
-					case 2:
-						pl_x -= 1;
-					break;
-					
-					case 3:
-						pl_y -= 1; 
-					break;
-				}
-			}
-	}
-}
-
-
-
 // Backgrounds //
 void black_bg_load(void) { 
 	SMS_loadPSGaidencompressedTiles(bg_psgcompr, 0); // files, tilefrom
@@ -366,11 +130,51 @@ void bg_scroll(void) {
 	}
 }
 
+void wall_pellet_collision(int wall_x, int wall_y) { 
+	int pel_x = 0; // just for easy reading //
+	int pel_y = 0;
+	for(int i = 0; i < level_pellet_num; i++) {
+		pel_x = pellets_x_y[i][0];
+		pel_y = pellets_x_y[i][1];
+
+		// collision bounderies //
+		if(	wall_x < pel_x + 8 &&
+    		wall_x + 16 > pel_x &&
+    		wall_y < pel_y + 8 &&
+    		wall_y + 16 > pel_y) {
+				wall_pellet_col = 1;
+				return;
+			} 
+	}
+	wall_pellet_col = 0;	
+	return;
+}
+
+
 // Wall sprites //
 void walls_draw(void) { 
 	for(int i = 0; i < level_walls_num; i++) {
 		SMS_setTileatXY(walls_x_y[i][0] / 8 , walls_x_y[i][1] / 8, 100);
 	}
+}
+
+// Pellet Sprites //
+void pellets_draw(void) {
+	unsigned int pellet_anim = 264;
+	if(en_anim < 40) { pellet_anim = 264; }
+	if(en_anim == 40) { pellet_anim = 265; }
+	if(en_anim > 80) { en_anim = 0; }
+
+	for(int i = 0; i < level_pellet_num; i++) {
+		SMS_addSprite(pellets_x_y[i][0], pellets_x_y[i][1], pellet_anim);
+	}
+	en_anim++;
+}
+
+// Sprite Tiles
+void level_load_sprites(void) {
+	SMS_loadPSGaidencompressedTiles(level_sprites_psgcompr, 256);
+	SMS_loadSpritePalette(level_sprites_bin);
 }
 
 // Level Stuff //
@@ -567,17 +371,188 @@ void level_reset(void) {
 	level_counter = 10;
 }
 
-// Pellet Sprites //
-void pellets_draw(void) {
-	unsigned int pellet_anim = 264;
-	if(en_anim < 40) { pellet_anim = 264; }
-	if(en_anim == 40) { pellet_anim = 265; }
-	if(en_anim > 80) { en_anim = 0; }
+// Player Related Stuff //
+void player_draw(void) {
 
-	for(int i = 0; i < level_pellet_num; i++) {
-		SMS_addSprite(pellets_x_y[i][0], pellets_x_y[i][1], pellet_anim);
+	unsigned int tile_1 = 2;
+	unsigned int tile_2 = 3;
+	unsigned int tile_3 = 4;
+	unsigned int tile_4 = 5;
+
+	// select which tiles to load as the ship main sprite (4 tiles), based on the direction you're going //
+	switch(pl_dir) { 
+		case 0: 
+			tile_1 = 256;
+			tile_2 = 257;
+			tile_3 = 269;
+			tile_4 = 270;
+		break;
+
+		case 1:
+			tile_1 = 262;
+			tile_2 = 263;
+			tile_3 = 275;
+			tile_4 = 276;
+		break;
+
+		case 2:
+			tile_1 = 258;
+			tile_2 = 259;
+			tile_3 = 271;
+			tile_4 = 272;
+		break;
+
+		case 3:
+			tile_1 = 260;
+			tile_2 = 261;
+			tile_3 = 273;
+			tile_4 = 274;
+		break;
 	}
-	en_anim++;
+
+	// Add the correct tiles as sprites as the correct positions //
+	SMS_addSprite(pl_x,     pl_y,     tile_1);
+	SMS_addSprite(pl_x + 8, pl_y,     tile_2);
+	SMS_addSprite(pl_x,     pl_y + 8, tile_3);
+	SMS_addSprite(pl_x + 8, pl_y + 8, tile_4);
+
+}
+
+void player_movement(void) {
+	// set bounderies // 
+	if((pl_x < pl_lim_left) && (pl_dir == 1)) {
+		pl_spd = 0; 
+		return;
+	}
+	if((pl_y < pl_lim_top) && (pl_dir == 0)) {
+		pl_spd = 0;
+		return;
+	}
+
+	if((pl_x > pl_lim_right) && (pl_dir == 2)) {
+		pl_spd = 0; 
+		return;
+	}
+	if((pl_y > pl_lim_bottom) && (pl_dir == 3)) {
+		pl_spd = 0;
+		return;
+	}
+
+	// move //
+	if(pl_spd != 0 ) { 
+		switch(pl_dir) { 
+			case 0:
+				pl_y -= pl_spd;
+			break;
+
+			case 1:
+				pl_x -= pl_spd;
+			break;
+
+			case 2:
+				pl_x += pl_spd;
+			break;
+
+			case 3:
+				pl_y += pl_spd;
+			break;
+		}
+	}
+}
+
+// Controller Operations //
+void player_control(void) { 
+	unsigned int key=SMS_getKeysStatus();
+
+	if(key & PORT_A_KEY_UP && walls_col_dir != 0) 	{ pl_dir = 0; pl_spd = pl_spd_regular; }
+	if(key & PORT_A_KEY_DOWN && walls_col_dir != 3)	{ pl_dir = 3; pl_spd = pl_spd_regular; }
+	if(key & PORT_A_KEY_LEFT && walls_col_dir != 1)	{ pl_dir = 1; pl_spd = pl_spd_regular; }
+	if(key & PORT_A_KEY_RIGHT && walls_col_dir != 2)	{ pl_dir = 2; pl_spd = pl_spd_regular; }
+	if(key & PORT_A_KEY_1)	{ if(pl_spd != 0) { pl_spd = pl_spd_boost; } }
+}
+
+// Player-Pellet Collision //
+void player_pellet_collision(void) { 
+	int pel_x = 0; // just for easy reading //
+	int pel_y = 0;
+	for(int i = 0; i < level_pellet_num; i++) {
+		pel_x = pellets_x_y[i][0];
+		pel_y = pellets_x_y[i][1];
+
+		// collision bounderies //
+		if(	pl_x < pel_x + 8 &&
+    		pl_x + 16 > pel_x &&
+    		pl_y < pel_y + 8 &&
+    		pl_y + 16 > pel_y) {
+				pellets_x_y[i][0] = 200; //remove pellet//
+				pellets_x_y[i][1] = 200;
+				level_pellet_collected++;
+				PSGSFXPlay(pickup_psg,SFX_CHANNEL2);
+				score += 10;
+			}
+	}
+	
+}
+
+// Player-Enemy Shot Collision //
+void player_enshot_collision(void) {
+	// Left Shot //
+	if(	pl_x < en_s_l_x + 8 &&
+    	pl_x + 16 > en_s_l_x &&
+    	pl_y < en_s_l_y + 8 &&
+    	pl_y + 16 > en_s_l_y) 
+		{
+			lives--;
+			gamestate = 4;
+		}
+
+	// Right Shot //
+	if(	pl_x < en_s_r_x + 8 &&
+    	pl_x + 16 > en_s_r_x &&
+    	pl_y < en_s_r_y + 8 &&
+    	pl_y + 16 > en_s_r_y) 
+		{
+			lives--;
+			gamestate = 4;
+			
+		}
+}
+
+// Player-Walls Collision //
+void player_walls_collision(void) { 
+	int wall_x = 0; // just for easy reading //
+	int wall_y = 0;
+	walls_col_dir = -1;
+	for(int i = 0; i < level_walls_num; i++) {
+		wall_x = walls_x_y[i][0];
+		wall_y = walls_x_y[i][1];
+
+		// collision bounderies //
+		if(	pl_x < wall_x + 8 &&
+    		pl_x + 16 > wall_x &&
+    		pl_y < wall_y + 8 &&
+    		pl_y + 16 > wall_y) {
+				pl_spd = 0;
+				walls_col_dir = pl_dir;
+				switch(walls_col_dir) { 
+					case 0:
+						pl_y += 1; 
+					break;
+					
+					case 1:
+						pl_x += 1;
+					break;
+					
+					case 2:
+						pl_x -= 1;
+					break;
+					
+					case 3:
+						pl_y -= 1; 
+					break;
+				}
+			}
+	}
 }
 
 // Turrets / Turrets Fire //
@@ -804,21 +779,39 @@ void drawTimer(void) {
 // Text Screens // 
 void doTitleScreen(void) {
 	int a = 0;
-	char temp[5];
+	int p = 0;
+	//char temp[5];
 	
 	black_bg_load();
 	SMS_setBGScrollX(0);
 	SMS_setBGScrollY(0);
 	vdp_clear_sprites();
-	SMS_autoSetUpTextRenderer();
-	SMS_printatXY(10,11,"RAPOSA DO SOL");
-	SMS_printatXY(11,15,"PRESS START");
+	//SMS_autoSetUpTextRenderer();
+	//SMS_printatXY(10,11,"RAPOSA DO SOL");
+	//SMS_printatXY(11,15,"PRESS START");
 
-	SMS_printatXY(11,2,"HI:");
-	sprintf((char*)temp,"%u",hiscore);
-	SMS_printatXY(14,2, temp);
+	//SMS_printatXY(11,2,"HI:");
+	//sprintf((char*)temp,"%u",hiscore);
+	//SMS_printatXY(14,2, temp);
 
 	PSGPlay(raposa_1_psg);
+
+	SMS_loadPSGaidencompressedTiles(title_screen_psgcompr, 0); // files, tilefrom
+	SMS_loadSTMcompressedTileMap(0,0,title_screen_stmcompr); // x,y, files
+	SMS_loadBGPalette(title_screen_1_bin); // palette file //
+
+	SMS_setBGPaletteColor(3, RGB(3,3,3));
+	SMS_setBGPaletteColor(6, RGB(3,3,3));
+	SMS_setBGPaletteColor(7, RGB(3,3,3));
+	SMS_setBGPaletteColor(8, RGB(3,3,3));
+
+	SMS_setBGPaletteColor(4, RGB(3,0,0));
+	SMS_setBGPaletteColor(9, RGB(3,0,0));
+	SMS_setBGPaletteColor(10, RGB(3,0,0));
+	SMS_setBGPaletteColor(11, RGB(3,0,0));
+	SMS_setBGPaletteColor(12, RGB(3,0,0));
+
+	SMS_setBackdropColor (RGB(0,0,0));
 
 	SMS_displayOn();
 	
@@ -827,6 +820,33 @@ void doTitleScreen(void) {
 		if(key & PORT_A_KEY_1)	{ a = 1; }
 		PSGFrame();
 		SMS_waitForVBlank();
+		p++;
+
+		if(p == 25) {  
+			SMS_setBGPaletteColor(3, RGB(3,0,0));
+			SMS_setBGPaletteColor(6, RGB(3,0,0));
+			SMS_setBGPaletteColor(7, RGB(3,0,0));
+			SMS_setBGPaletteColor(8, RGB(3,0,0));
+
+			SMS_setBGPaletteColor(4, RGB(3,3,3));
+			SMS_setBGPaletteColor(9, RGB(3,3,3));
+			SMS_setBGPaletteColor(10, RGB(3,3,3));
+			SMS_setBGPaletteColor(11, RGB(3,3,3));
+			SMS_setBGPaletteColor(12, RGB(3,3,3));
+					}
+		if(p == 50) { 
+			SMS_setBGPaletteColor(3, RGB(3,3,3));
+			SMS_setBGPaletteColor(6, RGB(3,3,3));
+			SMS_setBGPaletteColor(7, RGB(3,3,3));
+			SMS_setBGPaletteColor(8, RGB(3,3,3));
+
+			SMS_setBGPaletteColor(4, RGB(3,0,0));
+			SMS_setBGPaletteColor(9, RGB(3,0,0));
+			SMS_setBGPaletteColor(10, RGB(3,0,0));
+			SMS_setBGPaletteColor(11, RGB(3,0,0));
+			SMS_setBGPaletteColor(12, RGB(3,0,0));
+			p = 0; 
+		}
 
 	}
 	PSGStop();
@@ -847,7 +867,7 @@ void doMenuScreen(void) {
 	SMS_printatXY(10,10,"> FIXED WORLD");
 	SMS_printatXY(10,12,"  RANDOM WORLD");
 	SMS_waitForVBlank();
-
+	PSGPlay(menu_music_psg);
 	while(a == 0) {
 		unsigned int key=SMS_getKeysStatus();
 		if(key & PORT_A_KEY_UP && gamemode !=1) { 
@@ -864,9 +884,10 @@ void doMenuScreen(void) {
 		}
 		if(key & PORT_A_KEY_1) { a = 1; }
 		PSGSFXFrame();
+		PSGFrame();
 		SMS_waitForVBlank();
-					
 	}
+	PSGStop();
 	return;
 
 }
@@ -911,36 +932,42 @@ void doGameOver(void) {
 	SMS_printatXY(11,2,"HI:");
 	sprintf((char*)temp,"%u",hiscore);
 	SMS_printatXY(14,2, temp);
-
+	PSGPlay(gameover_jingle_psg);
 	while(a < 200) { 
 		SMS_waitForVBlank();
 		a++; 
+		PSGFrame();
 	}
 	level_load_sprites();
+	PSGStop();
 	return;
 }
 
-void doNewGame(void) { 
-	score = 0;
-	lives = 3;
-	reset_level_arrays();
-	reset_enemy_variables();
-	reset_player_variables();
+void doGameEnd(void) {
+	int a = 0;
+	
+	black_bg_load();
+	SMS_setBGScrollX(0);
+	SMS_setBGScrollY(0);
+	vdp_clear_sprites();
+	SMS_autoSetUpTextRenderer();
+	SMS_printatXY(7,5,"ALL SATELLITES HAVE");
+	SMS_printatXY(7,6,"BEEN RECOVERED");
+	SMS_printatXY(5,10,"THIS IS THE HAPPY ENDING");
 
-}
+	// PSGPlay(raposa_1_psg);
 
-void checkPause(void) {
-	if (SMS_queryPauseRequested()) {
-    	SMS_resetPauseRequest();
-      	paused = !paused;
+	SMS_displayOn();
+	
+	while(a == 0) { 
+		//unsigned int key=SMS_getKeysStatus();
+		//if(key & PORT_A_KEY_1)	{ a = 1; }
+		PSGFrame();
+		SMS_waitForVBlank();
 
-		if(paused) { 
-			PSGSFXStop();
-			gamestate = 5; 
-		} else { 
-			gamestate = 1; 
-		}
 	}
+	//PSGStop();
+	//return;
 }
 
 //struct sram { unsigned int points; };
@@ -970,11 +997,34 @@ void clearHiScore(void) {
 	//SMS_disableSRAM();
 }
 
+void doNewGame(void) { 
+	score = 0;
+	lives = 3;
+	reset_level_arrays();
+	reset_enemy_variables();
+	reset_player_variables();
+
+}
+
+void checkPause(void) {
+	if (SMS_queryPauseRequested()) {
+    	SMS_resetPauseRequest();
+      	paused = !paused;
+
+		if(paused) { 
+			PSGSFXStop();
+			gamestate = 5; 
+		} else { 
+			gamestate = 1; 
+		}
+	}
+}
+
 // Main Program //
 void main(void) {
 
 	int c = 30; // Used to seed the rand command //
-	
+
 	vdp_config();
 
 	vdp_vram_clear();
@@ -1089,7 +1139,7 @@ void main(void) {
 			level_reset();
 			level_fixed_current++;
 			if(gamemode == 1) { 
-				if(level_fixed_current > 1) { gamestate = 0; doNewGame(); doTitleScreen(); }	
+				if(level_fixed_current > 1) { gamestate = 0; doGameEnd(); }	
 				level_load(level_fixed_current,c); 
 			}
 			if(gamemode == 0) { level_load(0,c); }

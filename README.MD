@@ -3,18 +3,27 @@ This is a Sega Master System game "inspired" by the Atari 2600 game Solar Fox.
 "Raposa do Sol" means Sun Fox in pt-br.
 
 Coded by [tibonev](http://classicgames.com.br)
+
+
 using the [SMSDevkit by sverx](https://github.com/sverx/devkitSMS)
+
+
 levels designed using [Tiled](http://mapeditor.org)
+
+
 music done using [Furnace](https://tildearrow.org/furnace/)
 
-To build it, you need a working copy of SDCC and SMSDevkit, with crt0, SMSLib and PSGlib inside their own folders alongside main.c, if you're in a windows enviroment, then all you need to do is run build.bat.
+
+To build it, you need a working copy of SDCC and SMSDevkit, with crt0, lib(SMSlib) and PSGlib inside their own folders, relative to main.c, if you're in a windows enviroment, then all you need to do is run build.bat.
 Otherwise you might need to execute the commands yourself. 
+
+There's a PHP companion tool, to convert Tiled's CSV output to C Array used in the code.
 
 ## Instructions:
 - Move the ship with the D-Pad
 - Hold Button 1 to use the speed boost.
 
-Your mission, choose you accept it is to capture all the sattelites without getting shot by the turrets, good luck.
+Your mission, choose you accept it is to recover all the sattelites without getting shot by the turrets, good luck.
 Oh yeah, there's a time limit also. oops.
 
 All the assets (code, graphics and music) were created by tibonev. 
@@ -22,6 +31,16 @@ Everything is licensed under the MIT License (check out LICENSE for more info).
 (c) 2024 tibonev.
 
 ### Version History: 
+
+V0.14 (25/03/24)
+- Added game over jingle.
+- Added menu music.
+- Added doGameEnd (ending screen for the fixed world campaign);
+- Added Title Screen with logo.
+- Started separating the code into multiple files for easier reading (will require rewrite of a lot of stuff)
+
+V0.13 (19/03/24)
+- Github Repository created.
 
 V0.12 (12/03/24)
 - Added random stars in the background.

@@ -1,9 +1,11 @@
 del game.sms
-del main.ihx
-del main.asm
-del main.lk
-del main.lst
-del main.map
-del main.noi
+del *.ihx
+del *.asm
+del *.lk
+del *.lst
+del *.map
+del *.noi
 del main.rel
-del main.sym
+del vdp.rel
+del *.sym
+
