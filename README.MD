@@ -23,7 +23,7 @@ There's a PHP companion tool, to convert Tiled's CSV output to C Array used in t
 - Move the ship with the D-Pad
 - Hold Button 1 to use the speed boost.
 
-Your mission, choose you accept it is to recover all the sattelites without getting shot by the turrets, good luck.
+Your mission, choose you accept it is to recover all the satelittes without getting shot by the turrets, good luck.
 Oh yeah, there's a time limit also. oops.
 
 All the assets (code, graphics and music) were created by tibonev. 
@@ -32,12 +32,21 @@ Everything is licensed under the MIT License (check out LICENSE for more info).
 
 ### Version History: 
 
+V0.15 (26/03/24)
+- Added Fixed World Levels.
+- Adjusted player bounderies within the screen.
+- Fixed typo on DoLivesScreen.
+- Fixed bug: 'hi-score not showing after game end'.
+- Added "lives" jingle.
+- Added fixed world music.
+- Added random world music.
+
 V0.14 (25/03/24)
 - Added game over jingle.
 - Added menu music.
 - Added doGameEnd (ending screen for the fixed world campaign);
 - Added Title Screen with logo.
-- Started separating the code into multiple files for easier reading (will require rewrite of a lot of stuff)
+- Started separating the code into multiple files for easier reading (will require rewrite of a lot of stuff, not sure if its worth the hassle for this game.)
 
 V0.13 (19/03/24)
 - Github Repository created.
@@ -63,7 +72,6 @@ V0.09 (05/03/24)
 - Added enemy_shot SFX.
 - Added menu_tick SFX.
 - Added pellet pickup SFX.
-
 
 V0.08 (01/03/24)
 - To avoid slowdown, moved all walls to background tiles.
@@ -98,14 +106,8 @@ V0.01: (20/02/24)
 - Player is controllable with 2 speeds
 - Collision detection of both player-pellet / player-enemy shot are working
 
-To do:
-- understand slowdown (excess of sprites) ? - removed walls sprites for background tiles.
-- Improve scrolling (how is it possible to relocate tiles in realtime without slow?) (have to remove it)?
-- Sounds (understand bug)
-- Separate code into files / makefile
-- hi-score sram?
-- proper title screen
-- create 'fixed world' levels (see the easiest / fastest way - using php converter) 
-
-
-
+### To do:
+- sfx continue playing bug? primary focus, V15 has "pickup_psg" disabled.
+- Re-add Scrolling (how to shift all the collisions without slowing down?)
+- Separate code into files / makefile (will require re-write, not worth the effort?)
+- hi-score sram? (understand how to make sram work)

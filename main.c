@@ -1,5 +1,5 @@
 // Silver Fox //
-// Coded by tibonev using sverx's sms dev kit //
+// Coded by tibonev using sverx's sms devkit //
 // tibonev: http://classicgames.com.br //
 // All assets, code, music etc: made by tibonev //
 
@@ -19,9 +19,9 @@
 // Init Variables //
 unsigned int pl_x = 100; 			// player x axis position //
 unsigned int pl_y = 100; 			// player y axis position //
-unsigned int pl_lim_left = 30;		// player limit on the left border of the screen //
-unsigned int pl_lim_right = 200;	// player limit on the right border of the screen //
-unsigned int pl_lim_top = 20;		// player limit on the top border of the screen //
+unsigned int pl_lim_left = 25;		// player limit on the left border of the screen //
+unsigned int pl_lim_right = 220;	// player limit on the right border of the screen //
+unsigned int pl_lim_top = 12;		// player limit on the top border of the screen //
 unsigned int pl_lim_bottom = 150;	// player limit on the bottom border of the screen //
 unsigned int pl_dir = 0;			// player direcion (0 = up, 1 = left, 2 = right, 3 = down)
 unsigned int pl_spd = 1;			// player speed (0 = stationary, 1 = regular, 2 = boosted)
@@ -53,7 +53,6 @@ int pellets_x_y[32][2];						// array used to draw/check collision (max of 32 pe
 unsigned int level_walls_num = 0;
 int walls_x_y[64][2];						// walls position, max of 64 tiles, and 2 coordinates per tile (x,y);
 int walls_col_dir = -1;
-
 
 unsigned int bg_scroll_x = 0;				// used to control the background scroll //
 unsigned int bg_scroll_y = 0;				// used to control the background scroll //
@@ -110,6 +109,7 @@ void black_bg_load(void) {
 	SMS_loadPSGaidencompressedTiles(bg_psgcompr, 0); // files, tilefrom
 	SMS_loadSTMcompressedTileMap(0,0,bg_stmcompr); // x,y, files
 	SMS_loadBGPalette(bg_bin); // palette file //
+	SMS_setBackdropColor (RGB(0,0,0));
 }
 
 void bg_scroll(void) {
@@ -149,7 +149,6 @@ void wall_pellet_collision(int wall_x, int wall_y) {
 	wall_pellet_col = 0;	
 	return;
 }
-
 
 // Wall sprites //
 void walls_draw(void) { 
@@ -198,6 +197,13 @@ void level_bg_load(void) {
 		case 4:
 			SMS_loadBGPalette(tiles4_bin);
 		break;
+	}
+
+	if(gamemode == 1) { 
+		if(level_fixed_current == 10) { SMS_loadBGPalette(tiles4_bin); }
+		if(level_fixed_current < 10) { SMS_loadBGPalette(tiles3_bin); }
+		if(level_fixed_current < 7) { SMS_loadBGPalette(tiles2_bin); }
+		if(level_fixed_current < 4) { SMS_loadBGPalette(tiles_bin); }
 	}
 	
 	SMS_loadPSGaidencompressedTiles(timer_psgcompr,200); // timer tiles //
@@ -255,6 +261,9 @@ void level_load(int level, int seed) {
 		
 	reset_level_arrays();
 
+	if(gamemode == 0) { PSGPlay(random_world_psg); }
+	if(gamemode == 1) { PSGPlay(fixed_world_psg); }
+
 	if(level == 1) { 
 		level_pellet_collected = 0;
 		en_l_y = 10; 
@@ -262,67 +271,494 @@ void level_load(int level, int seed) {
 		en_r_y = 30;
 		en_r_dir = 0;
 		
-		walls_x_y[0][0] = 80; walls_x_y[0][1] = 40;
-		walls_x_y[1][0] = 88; walls_x_y[1][1] = 40;
-		walls_x_y[2][0] = 96; walls_x_y[2][1] = 40;
-		walls_x_y[3][0] = 104; walls_x_y[3][1] = 40;
-		walls_x_y[4][0] = 152; walls_x_y[4][1] = 40;
-		walls_x_y[5][0] = 160; walls_x_y[5][1] = 40;
-		walls_x_y[6][0] = 168; walls_x_y[6][1] = 40;
-		walls_x_y[7][0] = 176; walls_x_y[7][1] = 40;
-		walls_x_y[8][0] = 104; walls_x_y[8][1] = 48;
-		walls_x_y[9][0] = 152; walls_x_y[9][1] = 48;
-		walls_x_y[10][0] = 104; walls_x_y[10][1] = 56;
-		walls_x_y[11][0] = 152; walls_x_y[11][1] = 56;
-		walls_x_y[12][0] = 104; walls_x_y[12][1] = 64;
-		walls_x_y[13][0] = 152; walls_x_y[13][1] = 64;
-		walls_x_y[14][0] = 104; walls_x_y[14][1] = 72;
-		walls_x_y[15][0] = 152; walls_x_y[15][1] = 72;
-		walls_x_y[16][0] = 104; walls_x_y[16][1] = 80;
-		walls_x_y[17][0] = 152; walls_x_y[17][1] = 80;
-		walls_x_y[18][0] = 56; walls_x_y[18][1] = 88;
-		walls_x_y[19][0] = 64; walls_x_y[19][1] = 88;
-		walls_x_y[20][0] = 72; walls_x_y[20][1] = 88;
-		walls_x_y[21][0] = 80; walls_x_y[21][1] = 88;
-		walls_x_y[22][0] = 88; walls_x_y[22][1] = 88;
-		walls_x_y[23][0] = 96; walls_x_y[23][1] = 88;
-		walls_x_y[24][0] = 104; walls_x_y[24][1] = 88;
-		walls_x_y[25][0] = 152; walls_x_y[25][1] = 88;
-		walls_x_y[26][0] = 160; walls_x_y[26][1] = 88;
-		walls_x_y[27][0] = 168; walls_x_y[27][1] = 88;
-		walls_x_y[28][0] = 176; walls_x_y[28][1] = 88;
-		walls_x_y[29][0] = 184; walls_x_y[29][1] = 88;
-		walls_x_y[30][0] = 192; walls_x_y[30][1] = 88;
-		walls_x_y[31][0] = 200; walls_x_y[31][1] = 88;
-		level_walls_num=32;
-		
-		pellets_x_y[0][0] = 32; pellets_x_y[0][1] = 15;
-		pellets_x_y[1][0] = 208; pellets_x_y[1][1] = 15;
-		pellets_x_y[2][0] = 112; pellets_x_y[2][1] = 40;
-		pellets_x_y[3][0] = 144; pellets_x_y[3][1] = 56;
-		pellets_x_y[4][0] = 112; pellets_x_y[4][1] = 72;
-		pellets_x_y[5][0] = 144; pellets_x_y[5][1] = 88;
-		pellets_x_y[6][0] = 112; pellets_x_y[6][1] = 104;
-		pellets_x_y[7][0] = 144; pellets_x_y[7][1] = 112;
-		pellets_x_y[8][0] = 112; pellets_x_y[8][1] = 128;
-		pellets_x_y[9][0] = 32; pellets_x_y[9][1] = 136;
-		pellets_x_y[10][0] = 56; pellets_x_y[10][1] = 136;
-		pellets_x_y[11][0] = 184; pellets_x_y[11][1] = 136;
-		pellets_x_y[12][0] = 208; pellets_x_y[12][1] = 136;
-		pellets_x_y[13][0] = 40; pellets_x_y[13][1] = 144;
-		pellets_x_y[14][0] = 48; pellets_x_y[14][1] = 144;
-		pellets_x_y[15][0] = 192; pellets_x_y[15][1] = 144;
-		pellets_x_y[16][0] = 200; pellets_x_y[16][1] = 144;
-		pellets_x_y[17][0] = 40; pellets_x_y[17][1] = 152;
-		pellets_x_y[18][0] = 48; pellets_x_y[18][1] = 152;
-		pellets_x_y[19][0] = 192; pellets_x_y[19][1] = 152;
-		pellets_x_y[20][0] = 200; pellets_x_y[20][1] = 152;
-		pellets_x_y[21][0] = 32; pellets_x_y[21][1] = 160;
-		pellets_x_y[22][0] = 56; pellets_x_y[22][1] = 160;
-		pellets_x_y[23][0] = 184; pellets_x_y[23][1] = 160;
-		pellets_x_y[24][0] = 208; pellets_x_y[24][1] = 160;
-		level_pellet_num=25;
+		walls_x_y[0][0] = 24; walls_x_y[0][1] = 16;
+		walls_x_y[1][0] = 32; walls_x_y[1][1] = 16;
+		walls_x_y[2][0] = 40; walls_x_y[2][1] = 16;
+		walls_x_y[3][0] = 208; walls_x_y[3][1] = 16;
+		walls_x_y[4][0] = 216; walls_x_y[4][1] = 16;
+		walls_x_y[5][0] = 224; walls_x_y[5][1] = 16;
+		walls_x_y[6][0] = 24; walls_x_y[6][1] = 24;
+		walls_x_y[7][0] = 224; walls_x_y[7][1] = 24;
+		walls_x_y[8][0] = 24; walls_x_y[8][1] = 32;
+		walls_x_y[9][0] = 224; walls_x_y[9][1] = 32;
+		walls_x_y[10][0] = 112; walls_x_y[10][1] = 64;
+		walls_x_y[11][0] = 136; walls_x_y[11][1] = 64;
+		walls_x_y[12][0] = 120; walls_x_y[12][1] = 72;
+		walls_x_y[13][0] = 128; walls_x_y[13][1] = 72;
+		walls_x_y[14][0] = 120; walls_x_y[14][1] = 80;
+		walls_x_y[15][0] = 128; walls_x_y[15][1] = 80;
+		walls_x_y[16][0] = 112; walls_x_y[16][1] = 88;
+		walls_x_y[17][0] = 136; walls_x_y[17][1] = 88;
+		walls_x_y[18][0] = 24; walls_x_y[18][1] = 136;
+		walls_x_y[19][0] = 224; walls_x_y[19][1] = 136;
+		walls_x_y[20][0] = 24; walls_x_y[20][1] = 144;
+		walls_x_y[21][0] = 224; walls_x_y[21][1] = 144;
+		walls_x_y[22][0] = 24; walls_x_y[22][1] = 152;
+		walls_x_y[23][0] = 32; walls_x_y[23][1] = 152;
+		walls_x_y[24][0] = 40; walls_x_y[24][1] = 152;
+		walls_x_y[25][0] = 208; walls_x_y[25][1] = 152;
+		walls_x_y[26][0] = 216; walls_x_y[26][1] = 152;
+		walls_x_y[27][0] = 224; walls_x_y[27][1] = 152;
+		level_walls_num=28;
 
+		pellets_x_y[0][0] = 96; pellets_x_y[0][1] = 48;
+		pellets_x_y[1][0] = 152; pellets_x_y[1][1] = 48;
+		pellets_x_y[2][0] = 96; pellets_x_y[2][1] = 104;
+		pellets_x_y[3][0] = 152; pellets_x_y[3][1] = 104;
+		level_pellet_num=4;
+	}
+
+	if(level == 2) { 
+		level_pellet_collected = 0;
+		en_l_y = 10; 
+		en_l_dir = 1;
+		en_r_y = 30;
+		en_r_dir = 0;
+		
+		walls_x_y[0][0] = 88; walls_x_y[0][1] = 40;
+		walls_x_y[1][0] = 160; walls_x_y[1][1] = 40;
+		walls_x_y[2][0] = 88; walls_x_y[2][1] = 48;
+		walls_x_y[3][0] = 160; walls_x_y[3][1] = 48;
+		walls_x_y[4][0] = 88; walls_x_y[4][1] = 56;
+		walls_x_y[5][0] = 160; walls_x_y[5][1] = 56;
+		walls_x_y[6][0] = 88; walls_x_y[6][1] = 64;
+		walls_x_y[7][0] = 160; walls_x_y[7][1] = 64;
+		walls_x_y[8][0] = 88; walls_x_y[8][1] = 72;
+		walls_x_y[9][0] = 160; walls_x_y[9][1] = 72;
+		walls_x_y[10][0] = 88; walls_x_y[10][1] = 80;
+		walls_x_y[11][0] = 160; walls_x_y[11][1] = 80;
+		walls_x_y[12][0] = 88; walls_x_y[12][1] = 88;
+		walls_x_y[13][0] = 160; walls_x_y[13][1] = 88;
+		walls_x_y[14][0] = 88; walls_x_y[14][1] = 96;
+		walls_x_y[15][0] = 160; walls_x_y[15][1] = 96;
+		walls_x_y[16][0] = 88; walls_x_y[16][1] = 104;
+		walls_x_y[17][0] = 160; walls_x_y[17][1] = 104;
+		walls_x_y[18][0] = 88; walls_x_y[18][1] = 112;
+		walls_x_y[19][0] = 160; walls_x_y[19][1] = 112;
+		walls_x_y[20][0] = 88; walls_x_y[20][1] = 120;
+		walls_x_y[21][0] = 160; walls_x_y[21][1] = 120;
+		walls_x_y[22][0] = 88; walls_x_y[22][1] = 128;
+		walls_x_y[23][0] = 160; walls_x_y[23][1] = 128;
+		level_walls_num=24;
+
+		pellets_x_y[0][0] = 112; pellets_x_y[0][1] = 40;
+		pellets_x_y[1][0] = 136; pellets_x_y[1][1] = 40;
+		pellets_x_y[2][0] = 56; pellets_x_y[2][1] = 64;
+		pellets_x_y[3][0] = 192; pellets_x_y[3][1] = 64;
+		pellets_x_y[4][0] = 56; pellets_x_y[4][1] = 72;
+		pellets_x_y[5][0] = 192; pellets_x_y[5][1] = 72;
+		pellets_x_y[6][0] = 56; pellets_x_y[6][1] = 80;
+		pellets_x_y[7][0] = 192; pellets_x_y[7][1] = 80;
+		pellets_x_y[8][0] = 56; pellets_x_y[8][1] = 88;
+		pellets_x_y[9][0] = 192; pellets_x_y[9][1] = 88;
+		pellets_x_y[10][0] = 112; pellets_x_y[10][1] = 128;
+		pellets_x_y[11][0] = 136; pellets_x_y[11][1] = 128;
+		level_pellet_num=12;
+		
+	}
+
+	if(level == 3) { 
+		level_pellet_collected = 0;
+		en_l_y = 10; 
+		en_l_dir = 1;
+		en_r_y = 30;
+		en_r_dir = 0;
+
+		walls_x_y[0][0] = 128; walls_x_y[0][1] = 48;
+		walls_x_y[1][0] = 192; walls_x_y[1][1] = 48;
+		walls_x_y[2][0] = 128; walls_x_y[2][1] = 56;
+		walls_x_y[3][0] = 192; walls_x_y[3][1] = 56;
+		walls_x_y[4][0] = 128; walls_x_y[4][1] = 64;
+		walls_x_y[5][0] = 192; walls_x_y[5][1] = 64;
+		walls_x_y[6][0] = 128; walls_x_y[6][1] = 72;
+		walls_x_y[7][0] = 192; walls_x_y[7][1] = 72;
+		walls_x_y[8][0] = 128; walls_x_y[8][1] = 80;
+		walls_x_y[9][0] = 192; walls_x_y[9][1] = 80;
+		walls_x_y[10][0] = 128; walls_x_y[10][1] = 88;
+		walls_x_y[11][0] = 192; walls_x_y[11][1] = 88;
+		walls_x_y[12][0] = 128; walls_x_y[12][1] = 96;
+		walls_x_y[13][0] = 192; walls_x_y[13][1] = 96;
+		walls_x_y[14][0] = 128; walls_x_y[14][1] = 104;
+		walls_x_y[15][0] = 192; walls_x_y[15][1] = 104;
+		walls_x_y[16][0] = 128; walls_x_y[16][1] = 112;
+		walls_x_y[17][0] = 192; walls_x_y[17][1] = 112;
+		walls_x_y[18][0] = 128; walls_x_y[18][1] = 120;
+		walls_x_y[19][0] = 192; walls_x_y[19][1] = 120;
+		walls_x_y[20][0] = 128; walls_x_y[20][1] = 128;
+		walls_x_y[21][0] = 192; walls_x_y[21][1] = 128;
+		walls_x_y[22][0] = 128; walls_x_y[22][1] = 136;
+		walls_x_y[23][0] = 192; walls_x_y[23][1] = 136;
+		walls_x_y[24][0] = 128; walls_x_y[24][1] = 144;
+		walls_x_y[25][0] = 192; walls_x_y[25][1] = 144;
+		walls_x_y[26][0] = 24; walls_x_y[26][1] = 152;
+		walls_x_y[27][0] = 32; walls_x_y[27][1] = 152;
+		walls_x_y[28][0] = 40; walls_x_y[28][1] = 152;
+		walls_x_y[29][0] = 48; walls_x_y[29][1] = 152;
+		walls_x_y[30][0] = 56; walls_x_y[30][1] = 152;
+		walls_x_y[31][0] = 64; walls_x_y[31][1] = 152;
+		walls_x_y[32][0] = 72; walls_x_y[32][1] = 152;
+		walls_x_y[33][0] = 80; walls_x_y[33][1] = 152;
+		walls_x_y[34][0] = 88; walls_x_y[34][1] = 152;
+		walls_x_y[35][0] = 96; walls_x_y[35][1] = 152;
+		walls_x_y[36][0] = 104; walls_x_y[36][1] = 152;
+		walls_x_y[37][0] = 112; walls_x_y[37][1] = 152;
+		walls_x_y[38][0] = 120; walls_x_y[38][1] = 152;
+		walls_x_y[39][0] = 128; walls_x_y[39][1] = 152;
+		walls_x_y[40][0] = 136; walls_x_y[40][1] = 152;
+		walls_x_y[41][0] = 144; walls_x_y[41][1] = 152;
+		walls_x_y[42][0] = 152; walls_x_y[42][1] = 152;
+		walls_x_y[43][0] = 160; walls_x_y[43][1] = 152;
+		walls_x_y[44][0] = 168; walls_x_y[44][1] = 152;
+		walls_x_y[45][0] = 176; walls_x_y[45][1] = 152;
+		walls_x_y[46][0] = 184; walls_x_y[46][1] = 152;
+		walls_x_y[47][0] = 192; walls_x_y[47][1] = 152;
+		walls_x_y[48][0] = 200; walls_x_y[48][1] = 152;
+		walls_x_y[49][0] = 208; walls_x_y[49][1] = 152;
+		walls_x_y[50][0] = 216; walls_x_y[50][1] = 152;
+		walls_x_y[51][0] = 224; walls_x_y[51][1] = 152;
+		level_walls_num=52;
+
+		pellets_x_y[0][0] = 56; pellets_x_y[0][1] = 16;
+		pellets_x_y[1][0] = 96; pellets_x_y[1][1] = 16;
+		pellets_x_y[2][0] = 128; pellets_x_y[2][1] = 16;
+		pellets_x_y[3][0] = 160; pellets_x_y[3][1] = 16;
+		pellets_x_y[4][0] = 192; pellets_x_y[4][1] = 16;
+		pellets_x_y[5][0] = 152; pellets_x_y[5][1] = 128;
+		pellets_x_y[6][0] = 160; pellets_x_y[6][1] = 128;
+		pellets_x_y[7][0] = 168; pellets_x_y[7][1] = 128;
+		pellets_x_y[8][0] = 216; pellets_x_y[8][1] = 128;
+		level_pellet_num=9;
+	}
+
+	if(level == 4) { 
+		level_pellet_collected = 0;
+		en_l_y = 10; 
+		en_l_dir = 1;
+		en_r_y = 30;
+		en_r_dir = 0;
+
+		walls_x_y[0][0] = 72; walls_x_y[0][1] = 64;
+		walls_x_y[1][0] = 80; walls_x_y[1][1] = 64;
+		walls_x_y[2][0] = 88; walls_x_y[2][1] = 64;
+		walls_x_y[3][0] = 96; walls_x_y[3][1] = 64;
+		walls_x_y[4][0] = 104; walls_x_y[4][1] = 64;
+		walls_x_y[5][0] = 112; walls_x_y[5][1] = 64;
+		walls_x_y[6][0] = 120; walls_x_y[6][1] = 64;
+		walls_x_y[7][0] = 128; walls_x_y[7][1] = 64;
+		walls_x_y[8][0] = 136; walls_x_y[8][1] = 64;
+		walls_x_y[9][0] = 144; walls_x_y[9][1] = 64;
+		walls_x_y[10][0] = 152; walls_x_y[10][1] = 64;
+		walls_x_y[11][0] = 160; walls_x_y[11][1] = 64;
+		walls_x_y[12][0] = 168; walls_x_y[12][1] = 64;
+		walls_x_y[13][0] = 176; walls_x_y[13][1] = 64;
+		walls_x_y[14][0] = 184; walls_x_y[14][1] = 64;
+		walls_x_y[15][0] = 192; walls_x_y[15][1] = 64;
+		walls_x_y[16][0] = 200; walls_x_y[16][1] = 64;
+		walls_x_y[17][0] = 208; walls_x_y[17][1] = 64;
+		walls_x_y[18][0] = 216; walls_x_y[18][1] = 64;
+		walls_x_y[19][0] = 224; walls_x_y[19][1] = 64;
+		walls_x_y[20][0] = 168; walls_x_y[20][1] = 72;
+		walls_x_y[21][0] = 168; walls_x_y[21][1] = 80;
+		walls_x_y[22][0] = 168; walls_x_y[22][1] = 88;
+		walls_x_y[23][0] = 168; walls_x_y[23][1] = 96;
+		walls_x_y[24][0] = 168; walls_x_y[24][1] = 104;
+		walls_x_y[25][0] = 168; walls_x_y[25][1] = 112;
+		level_walls_num=26;
+
+		pellets_x_y[0][0] = 216; pellets_x_y[0][1] = 32;
+		pellets_x_y[1][0] = 200; pellets_x_y[1][1] = 40;
+		pellets_x_y[2][0] = 184; pellets_x_y[2][1] = 48;
+		pellets_x_y[3][0] = 24; pellets_x_y[3][1] = 64;
+		pellets_x_y[4][0] = 40; pellets_x_y[4][1] = 64;
+		pellets_x_y[5][0] = 56; pellets_x_y[5][1] = 64;
+		pellets_x_y[6][0] = 184; pellets_x_y[6][1] = 80;
+		pellets_x_y[7][0] = 200; pellets_x_y[7][1] = 88;
+		pellets_x_y[8][0] = 216; pellets_x_y[8][1] = 96;
+		level_pellet_num=9;
+	}
+
+	if(level == 5) { 
+		level_pellet_collected = 0;
+		en_l_y = 10; 
+		en_l_dir = 1;
+		en_r_y = 30;
+		en_r_dir = 0;
+
+		walls_x_y[0][0] = 48; walls_x_y[0][1] = 40;
+		walls_x_y[1][0] = 56; walls_x_y[1][1] = 40;
+		walls_x_y[2][0] = 64; walls_x_y[2][1] = 40;
+		walls_x_y[3][0] = 72; walls_x_y[3][1] = 40;
+		walls_x_y[4][0] = 80; walls_x_y[4][1] = 40;
+		walls_x_y[5][0] = 88; walls_x_y[5][1] = 40;
+		walls_x_y[6][0] = 96; walls_x_y[6][1] = 40;
+		walls_x_y[7][0] = 104; walls_x_y[7][1] = 40;
+		walls_x_y[8][0] = 128; walls_x_y[8][1] = 40;
+		walls_x_y[9][0] = 136; walls_x_y[9][1] = 40;
+		walls_x_y[10][0] = 144; walls_x_y[10][1] = 40;
+		walls_x_y[11][0] = 152; walls_x_y[11][1] = 40;
+		walls_x_y[12][0] = 160; walls_x_y[12][1] = 40;
+		walls_x_y[13][0] = 168; walls_x_y[13][1] = 40;
+		walls_x_y[14][0] = 176; walls_x_y[14][1] = 40;
+		walls_x_y[15][0] = 184; walls_x_y[15][1] = 40;
+		walls_x_y[16][0] = 32; walls_x_y[16][1] = 48;
+		walls_x_y[17][0] = 16; walls_x_y[17][1] = 64;
+		walls_x_y[18][0] = 16; walls_x_y[18][1] = 72;
+		walls_x_y[19][0] = 16; walls_x_y[19][1] = 80;
+		walls_x_y[20][0] = 16; walls_x_y[20][1] = 88;
+		walls_x_y[21][0] = 16; walls_x_y[21][1] = 96;
+		walls_x_y[22][0] = 32; walls_x_y[22][1] = 112;
+		walls_x_y[23][0] = 40; walls_x_y[23][1] = 112;
+		walls_x_y[24][0] = 48; walls_x_y[24][1] = 112;
+		walls_x_y[25][0] = 56; walls_x_y[25][1] = 112;
+		walls_x_y[26][0] = 64; walls_x_y[26][1] = 112;
+		walls_x_y[27][0] = 72; walls_x_y[27][1] = 112;
+		walls_x_y[28][0] = 80; walls_x_y[28][1] = 112;
+		walls_x_y[29][0] = 88; walls_x_y[29][1] = 112;
+		walls_x_y[30][0] = 96; walls_x_y[30][1] = 112;
+		walls_x_y[31][0] = 104; walls_x_y[31][1] = 112;
+		walls_x_y[32][0] = 112; walls_x_y[32][1] = 112;
+		walls_x_y[33][0] = 128; walls_x_y[33][1] = 112;
+		walls_x_y[34][0] = 136; walls_x_y[34][1] = 112;
+		walls_x_y[35][0] = 144; walls_x_y[35][1] = 112;
+		walls_x_y[36][0] = 152; walls_x_y[36][1] = 112;
+		walls_x_y[37][0] = 160; walls_x_y[37][1] = 112;
+		walls_x_y[38][0] = 168; walls_x_y[38][1] = 112;
+		walls_x_y[39][0] = 176; walls_x_y[39][1] = 112;
+		walls_x_y[40][0] = 184; walls_x_y[40][1] = 112;
+		walls_x_y[41][0] = 192; walls_x_y[41][1] = 112;
+		level_walls_num=42;
+
+		pellets_x_y[0][0] = 32; pellets_x_y[0][1] = 16;
+		pellets_x_y[1][0] = 200; pellets_x_y[1][1] = 16;
+		pellets_x_y[2][0] = 40; pellets_x_y[2][1] = 64;
+		pellets_x_y[3][0] = 208; pellets_x_y[3][1] = 128;
+		pellets_x_y[4][0] = 104; pellets_x_y[4][1] = 144;
+		level_pellet_num=5;		
+	}
+
+	if(level == 6) { 
+		level_pellet_collected = 0;
+		en_l_y = 10; 
+		en_l_dir = 1;
+		en_r_y = 30;
+		en_r_dir = 0;
+
+		walls_x_y[0][0] = 56; walls_x_y[0][1] = 48;
+		walls_x_y[1][0] = 64; walls_x_y[1][1] = 48;
+		walls_x_y[2][0] = 56; walls_x_y[2][1] = 56;
+		walls_x_y[3][0] = 56; walls_x_y[3][1] = 64;
+		walls_x_y[4][0] = 56; walls_x_y[4][1] = 72;
+		walls_x_y[5][0] = 40; walls_x_y[5][1] = 88;
+		walls_x_y[6][0] = 40; walls_x_y[6][1] = 96;
+		walls_x_y[7][0] = 40; walls_x_y[7][1] = 104;
+		walls_x_y[8][0] = 32; walls_x_y[8][1] = 112;
+		walls_x_y[9][0] = 40; walls_x_y[9][1] = 112;
+		walls_x_y[10][0] = 160; walls_x_y[10][1] = 112;
+		walls_x_y[11][0] = 168; walls_x_y[11][1] = 112;
+		walls_x_y[12][0] = 176; walls_x_y[12][1] = 112;
+		walls_x_y[13][0] = 184; walls_x_y[13][1] = 112;
+		walls_x_y[14][0] = 32; walls_x_y[14][1] = 120;
+		walls_x_y[15][0] = 160; walls_x_y[15][1] = 120;
+		walls_x_y[16][0] = 168; walls_x_y[16][1] = 120;
+		walls_x_y[17][0] = 176; walls_x_y[17][1] = 120;
+		walls_x_y[18][0] = 184; walls_x_y[18][1] = 120;
+		walls_x_y[19][0] = 32; walls_x_y[19][1] = 128;
+		walls_x_y[20][0] = 160; walls_x_y[20][1] = 128;
+		walls_x_y[21][0] = 168; walls_x_y[21][1] = 128;
+		walls_x_y[22][0] = 176; walls_x_y[22][1] = 128;
+		walls_x_y[23][0] = 184; walls_x_y[23][1] = 128;
+		walls_x_y[24][0] = 32; walls_x_y[24][1] = 136;
+		walls_x_y[25][0] = 160; walls_x_y[25][1] = 136;
+		walls_x_y[26][0] = 168; walls_x_y[26][1] = 136;
+		walls_x_y[27][0] = 176; walls_x_y[27][1] = 136;
+		walls_x_y[28][0] = 184; walls_x_y[28][1] = 136;
+		walls_x_y[29][0] = 32; walls_x_y[29][1] = 144;
+		walls_x_y[30][0] = 160; walls_x_y[30][1] = 144;
+		walls_x_y[31][0] = 168; walls_x_y[31][1] = 144;
+		walls_x_y[32][0] = 176; walls_x_y[32][1] = 144;
+		walls_x_y[33][0] = 184; walls_x_y[33][1] = 144;
+		level_walls_num=34;
+
+		pellets_x_y[0][0] = 40; pellets_x_y[0][1] = 24;
+		pellets_x_y[1][0] = 192; pellets_x_y[1][1] = 24;
+		pellets_x_y[2][0] = 40; pellets_x_y[2][1] = 40;
+		pellets_x_y[3][0] = 192; pellets_x_y[3][1] = 72;
+		pellets_x_y[4][0] = 64; pellets_x_y[4][1] = 128;
+		pellets_x_y[5][0] = 216; pellets_x_y[5][1] = 128;
+		level_pellet_num=6;
+	}
+
+	if(level == 7) { 
+		level_pellet_collected = 0;
+		en_l_y = 10; 
+		en_l_dir = 1;
+		en_r_y = 30;
+		en_r_dir = 0;
+
+		walls_x_y[0][0] = 64; walls_x_y[0][1] = 56;
+		walls_x_y[1][0] = 72; walls_x_y[1][1] = 56;
+		walls_x_y[2][0] = 80; walls_x_y[2][1] = 56;
+		walls_x_y[3][0] = 88; walls_x_y[3][1] = 56;
+		walls_x_y[4][0] = 96; walls_x_y[4][1] = 56;
+		walls_x_y[5][0] = 104; walls_x_y[5][1] = 56;
+		walls_x_y[6][0] = 112; walls_x_y[6][1] = 56;
+		walls_x_y[7][0] = 120; walls_x_y[7][1] = 56;
+		walls_x_y[8][0] = 128; walls_x_y[8][1] = 56;
+		walls_x_y[9][0] = 136; walls_x_y[9][1] = 56;
+		walls_x_y[10][0] = 144; walls_x_y[10][1] = 56;
+		walls_x_y[11][0] = 152; walls_x_y[11][1] = 56;
+		walls_x_y[12][0] = 152; walls_x_y[12][1] = 64;
+		walls_x_y[13][0] = 152; walls_x_y[13][1] = 72;
+		walls_x_y[14][0] = 152; walls_x_y[14][1] = 80;
+		walls_x_y[15][0] = 152; walls_x_y[15][1] = 88;
+		walls_x_y[16][0] = 152; walls_x_y[16][1] = 96;
+		walls_x_y[17][0] = 160; walls_x_y[17][1] = 96;
+		walls_x_y[18][0] = 168; walls_x_y[18][1] = 96;
+		walls_x_y[19][0] = 176; walls_x_y[19][1] = 96;
+		walls_x_y[20][0] = 184; walls_x_y[20][1] = 96;
+		walls_x_y[21][0] = 152; walls_x_y[21][1] = 104;
+		walls_x_y[22][0] = 160; walls_x_y[22][1] = 104;
+		walls_x_y[23][0] = 168; walls_x_y[23][1] = 104;
+		walls_x_y[24][0] = 176; walls_x_y[24][1] = 104;
+		walls_x_y[25][0] = 184; walls_x_y[25][1] = 104;
+		walls_x_y[26][0] = 152; walls_x_y[26][1] = 112;
+		walls_x_y[27][0] = 160; walls_x_y[27][1] = 112;
+		walls_x_y[28][0] = 168; walls_x_y[28][1] = 112;
+		walls_x_y[29][0] = 176; walls_x_y[29][1] = 112;
+		walls_x_y[30][0] = 184; walls_x_y[30][1] = 112;
+		walls_x_y[31][0] = 152; walls_x_y[31][1] = 120;
+		walls_x_y[32][0] = 152; walls_x_y[32][1] = 128;
+		walls_x_y[33][0] = 152; walls_x_y[33][1] = 136;
+		walls_x_y[34][0] = 152; walls_x_y[34][1] = 144;
+		walls_x_y[35][0] = 152; walls_x_y[35][1] = 152;
+		walls_x_y[36][0] = 120; walls_x_y[36][1] = 160;
+		walls_x_y[37][0] = 128; walls_x_y[37][1] = 160;
+		walls_x_y[38][0] = 136; walls_x_y[38][1] = 160;
+		walls_x_y[39][0] = 144; walls_x_y[39][1] = 160;
+		walls_x_y[40][0] = 152; walls_x_y[40][1] = 160;
+		level_walls_num=41;
+
+		pellets_x_y[0][0] = 40; pellets_x_y[0][1] = 16;
+		pellets_x_y[1][0] = 216; pellets_x_y[1][1] = 16;
+		pellets_x_y[2][0] = 168; pellets_x_y[2][1] = 128;
+		pellets_x_y[3][0] = 48; pellets_x_y[3][1] = 144;
+		level_pellet_num=4;		
+	}
+
+	if(level == 8) { 
+		level_pellet_collected = 0;
+		en_l_y = 10; 
+		en_l_dir = 1;
+		en_r_y = 30;
+		en_r_dir = 0;
+
+		walls_x_y[0][0] = 24; walls_x_y[0][1] = 80;
+		walls_x_y[1][0] = 32; walls_x_y[1][1] = 80;
+		walls_x_y[2][0] = 40; walls_x_y[2][1] = 80;
+		walls_x_y[3][0] = 48; walls_x_y[3][1] = 80;
+		walls_x_y[4][0] = 56; walls_x_y[4][1] = 80;
+		walls_x_y[5][0] = 64; walls_x_y[5][1] = 80;
+		walls_x_y[6][0] = 72; walls_x_y[6][1] = 80;
+		walls_x_y[7][0] = 80; walls_x_y[7][1] = 80;
+		walls_x_y[8][0] = 88; walls_x_y[8][1] = 80;
+		walls_x_y[9][0] = 96; walls_x_y[9][1] = 80;
+		walls_x_y[10][0] = 104; walls_x_y[10][1] = 80;
+		walls_x_y[11][0] = 112; walls_x_y[11][1] = 88;
+		walls_x_y[12][0] = 120; walls_x_y[12][1] = 88;
+		walls_x_y[13][0] = 128; walls_x_y[13][1] = 88;
+		walls_x_y[14][0] = 136; walls_x_y[14][1] = 88;
+		walls_x_y[15][0] = 144; walls_x_y[15][1] = 88;
+		walls_x_y[16][0] = 152; walls_x_y[16][1] = 88;
+		walls_x_y[17][0] = 160; walls_x_y[17][1] = 88;
+		walls_x_y[18][0] = 168; walls_x_y[18][1] = 88;
+		walls_x_y[19][0] = 176; walls_x_y[19][1] = 88;
+		walls_x_y[20][0] = 184; walls_x_y[20][1] = 88;
+		walls_x_y[21][0] = 192; walls_x_y[21][1] = 88;
+		level_walls_num=22;
+
+		pellets_x_y[0][0] = 24; pellets_x_y[0][1] = 8;
+		pellets_x_y[1][0] = 112; pellets_x_y[1][1] = 64;
+		pellets_x_y[2][0] = 24; pellets_x_y[2][1] = 144;
+		level_pellet_num=3;
+	}
+
+	if(level == 9) { 
+		level_pellet_collected = 0;
+		en_l_y = 10; 
+		en_l_dir = 1;
+		en_r_y = 30;
+		en_r_dir = 0;
+
+		walls_x_y[0][0] = 224; walls_x_y[0][1] = 16;
+		walls_x_y[1][0] = 24; walls_x_y[1][1] = 24;
+		walls_x_y[2][0] = 224; walls_x_y[2][1] = 32;
+		walls_x_y[3][0] = 24; walls_x_y[3][1] = 40;
+		walls_x_y[4][0] = 120; walls_x_y[4][1] = 40;
+		walls_x_y[5][0] = 136; walls_x_y[5][1] = 40;
+		walls_x_y[6][0] = 152; walls_x_y[6][1] = 40;
+		walls_x_y[7][0] = 168; walls_x_y[7][1] = 40;
+		walls_x_y[8][0] = 224; walls_x_y[8][1] = 48;
+		walls_x_y[9][0] = 24; walls_x_y[9][1] = 56;
+		walls_x_y[10][0] = 120; walls_x_y[10][1] = 56;
+		walls_x_y[11][0] = 24; walls_x_y[11][1] = 72;
+		walls_x_y[12][0] = 120; walls_x_y[12][1] = 72;
+		walls_x_y[13][0] = 24; walls_x_y[13][1] = 88;
+		walls_x_y[14][0] = 88; walls_x_y[14][1] = 88;
+		walls_x_y[15][0] = 96; walls_x_y[15][1] = 88;
+		walls_x_y[16][0] = 104; walls_x_y[16][1] = 88;
+		walls_x_y[17][0] = 112; walls_x_y[17][1] = 88;
+		walls_x_y[18][0] = 120; walls_x_y[18][1] = 88;
+		walls_x_y[19][0] = 160; walls_x_y[19][1] = 88;
+		walls_x_y[20][0] = 176; walls_x_y[20][1] = 88;
+		walls_x_y[21][0] = 192; walls_x_y[21][1] = 88;
+		walls_x_y[22][0] = 208; walls_x_y[22][1] = 88;
+		walls_x_y[23][0] = 224; walls_x_y[23][1] = 88;
+		walls_x_y[24][0] = 88; walls_x_y[24][1] = 96;
+		walls_x_y[25][0] = 24; walls_x_y[25][1] = 104;
+		walls_x_y[26][0] = 88; walls_x_y[26][1] = 112;
+		walls_x_y[27][0] = 24; walls_x_y[27][1] = 120;
+		walls_x_y[28][0] = 88; walls_x_y[28][1] = 128;
+		walls_x_y[29][0] = 96; walls_x_y[29][1] = 128;
+		walls_x_y[30][0] = 112; walls_x_y[30][1] = 128;
+		walls_x_y[31][0] = 128; walls_x_y[31][1] = 128;
+		walls_x_y[32][0] = 144; walls_x_y[32][1] = 128;
+		walls_x_y[33][0] = 160; walls_x_y[33][1] = 128;
+		walls_x_y[34][0] = 24; walls_x_y[34][1] = 136;
+		walls_x_y[35][0] = 96; walls_x_y[35][1] = 136;
+		walls_x_y[36][0] = 96; walls_x_y[36][1] = 144;
+		walls_x_y[37][0] = 24; walls_x_y[37][1] = 152;
+		walls_x_y[38][0] = 96; walls_x_y[38][1] = 152;
+		level_walls_num=39;
+
+		pellets_x_y[0][0] = 56; pellets_x_y[0][1] = 136;
+		pellets_x_y[1][0] = 216; pellets_x_y[1][1] = 152;
+		level_pellet_num=2;
+	}
+
+	if(level == 10) { 
+		level_pellet_collected = 0;
+		en_l_y = 10; 
+		en_l_dir = 1;
+		en_r_y = 30;
+		en_r_dir = 0;
+
+		walls_x_y[0][0] = 72; walls_x_y[0][1] = 88;
+		walls_x_y[1][0] = 80; walls_x_y[1][1] = 88;
+		walls_x_y[2][0] = 88; walls_x_y[2][1] = 88;
+		walls_x_y[3][0] = 96; walls_x_y[3][1] = 88;
+		walls_x_y[4][0] = 104; walls_x_y[4][1] = 88;
+		walls_x_y[5][0] = 112; walls_x_y[5][1] = 88;
+		walls_x_y[6][0] = 120; walls_x_y[6][1] = 88;
+		walls_x_y[7][0] = 128; walls_x_y[7][1] = 88;
+		walls_x_y[8][0] = 136; walls_x_y[8][1] = 88;
+		walls_x_y[9][0] = 144; walls_x_y[9][1] = 88;
+		walls_x_y[10][0] = 152; walls_x_y[10][1] = 88;
+		walls_x_y[11][0] = 160; walls_x_y[11][1] = 88;
+		walls_x_y[12][0] = 168; walls_x_y[12][1] = 88;
+		level_walls_num=13;
+
+		pellets_x_y[0][0] = 120; pellets_x_y[0][1] = 80;
+		level_pellet_num=1;
 	}
 	
 	// Level Random //
@@ -487,7 +923,7 @@ void player_pellet_collision(void) {
 				pellets_x_y[i][0] = 200; //remove pellet//
 				pellets_x_y[i][1] = 200;
 				level_pellet_collected++;
-				PSGSFXPlay(pickup_psg,SFX_CHANNEL2);
+				//PSGSFXPlay(pickup_psg,SFX_CHANNEL3);
 				score += 10;
 			}
 	}
@@ -811,7 +1247,7 @@ void doTitleScreen(void) {
 	SMS_setBGPaletteColor(11, RGB(3,0,0));
 	SMS_setBGPaletteColor(12, RGB(3,0,0));
 
-	SMS_setBackdropColor (RGB(0,0,0));
+	
 
 	SMS_displayOn();
 	
@@ -901,14 +1337,17 @@ void doLivesScreen(void) {
 	SMS_setBGScrollX(0);
 	SMS_setBGScrollY(0);
 	SMS_autoSetUpTextRenderer();
-	SMS_printatXY(10,10,"SHIPS REMAINING");
+	SMS_printatXY(10,10,"SHIP(S) REMAINING");
 	SMS_setNextTileatXY(7,10);
 	SMS_setTile(lives_tile);
 	PSGSFXStop();
-	while(i < 200) { 
+	PSGPlay(lives_psg);
+	while(i < 150) { 
+		PSGFrame();
 		SMS_waitForVBlank();
 		i++;
 	}
+	PSGStop();
 	level_bg_load();
 	level_load_sprites();
 	return;
@@ -1012,9 +1451,12 @@ void checkPause(void) {
       	paused = !paused;
 
 		if(paused) { 
+			PSGStop();
 			PSGSFXStop();
 			gamestate = 5; 
 		} else { 
+			if(gamemode == 0) { PSGPlay(random_world_psg); }
+			if(gamemode == 1) { PSGPlay(fixed_world_psg); }
 			gamestate = 1; 
 		}
 	}
@@ -1126,6 +1568,7 @@ void main(void) {
 
 		// Game Over //
 		if(gamestate == 2) { 
+			PSGStop();
 			checkHiScore();
 			doGameOver();
 			reset_enemy_variables();
@@ -1135,11 +1578,12 @@ void main(void) {
 
 		// Level Complete // 
 		if(gamestate == 3) {
+			PSGStop();
 			doLivesScreen();
 			level_reset();
 			level_fixed_current++;
 			if(gamemode == 1) { 
-				if(level_fixed_current > 1) { gamestate = 0; doGameEnd(); }	
+				if(level_fixed_current > 10) { gamestate = 0; checkHiScore(); doGameEnd(); }	
 				level_load(level_fixed_current,c); 
 			}
 			if(gamemode == 0) { level_load(0,c); }
@@ -1147,18 +1591,21 @@ void main(void) {
 
 		// Player Died // 
 		if(gamestate == 4) { 
+			PSGStop();
 			explosion_draw();
 			reset_enemy_variables();
 			reset_player_variables();
 			doLivesScreen();
 			walls_draw();
+			if(gamemode == 0) { PSGPlay(random_world_psg); }
+			if(gamemode == 1) { PSGPlay(fixed_world_psg); }
 			if(level_counter == 0) { level_counter = 10; }
 			frame_counter = 0; 
 			gamestate = 1;
 		}
 
 		// Game Paused //
-		if(gamestate == 5) { 
+		if(gamestate == 5) {
 			checkPause();
 		}
 
