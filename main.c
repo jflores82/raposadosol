@@ -49,9 +49,11 @@ unsigned int level_pellet_num = 0;			// how many pellets are in a level
 unsigned int level_pellet_collected = 0; 	// how many pellets have been collected 
 int level_fixed_current = 1;				// current level of the fixed world
 int pellets_x_y[32][2];						// array used to draw/check collision (max of 32 pellet sprites, 2 coordinates per sprite (x,y))
+int r_pellets_x_y[32][2];					// array used to reset the random level //
 
 unsigned int level_walls_num = 0;
 int walls_x_y[64][2];						// walls position, max of 64 tiles, and 2 coordinates per tile (x,y);
+int r_walls_x_y[64][2];						// used to reset the random level //
 int walls_col_dir = -1;
 
 unsigned int bg_scroll_x = 0;				// used to control the background scroll //
@@ -240,6 +242,13 @@ void level_bg_load(void) {
 	SMS_setTileatXY(1,21,105);
 	SMS_setTileatXY(31,0,106);
 	SMS_setTileatXY(31,21,106);
+
+	// TIME: //
+	SMS_setTileatXY(3,22,210);  
+	SMS_setTileatXY(4,22,211);  
+	SMS_setTileatXY(5,22,212);  
+	SMS_setTileatXY(6,22,213);  
+	SMS_setTileatXY(7,22,214);  
 		
 }
 
@@ -765,6 +774,9 @@ void level_load(int level, int seed) {
 	if(level == 0) {
 		srand(seed);  // re-seed the random number generator each time //
 		
+		int r_pellet_x = 0;
+		int r_pellet_y = 0;
+		
 		level_pellet_num = rand_num(5,20);
 		level_walls_num = rand_num(5,15);
 		en_l_y = rand_num(en_lim_top, en_lim_bot);
@@ -774,8 +786,13 @@ void level_load(int level, int seed) {
 		level_pellet_collected = 0;
 		// Pellets //
 		for(int i = 0; i < level_pellet_num; i++ ) {
-			pellets_x_y[i][0] = rand_num(pl_lim_left, pl_lim_right);
-			pellets_x_y[i][1] = rand_num(pl_lim_top, pl_lim_bottom);
+			r_pellet_x = rand_num(pl_lim_left, pl_lim_right);
+			r_pellet_y = rand_num(pl_lim_top, pl_lim_bottom);
+			
+			pellets_x_y[i][0] = r_pellet_x;
+			pellets_x_y[i][1] = r_pellet_y;
+			r_pellets_x_y[i][0] = pellets_x_y[i][0];
+			r_pellets_x_y[i][1] = pellets_x_y[i][1];
 		}
 		
 		// Walls //
@@ -787,7 +804,8 @@ void level_load(int level, int seed) {
 			if(wall_pellet_col == 0) { 
 				walls_x_y[i][0] = w_x;
 				walls_x_y[i][1] = w_y;
-				
+				r_walls_x_y[i][0] = w_x;
+				r_walls_x_y[i][1] = w_y;
 			}
 			i++;
 		}
@@ -805,6 +823,28 @@ void level_reset(void) {
 	reset_player_variables();
 	frame_counter = 0;
 	level_counter = 10;
+}
+
+void random_level_reset_arrays(void) {
+	int i;
+
+	
+	for(i = 0; i < level_walls_num; i++) {
+		walls_x_y[i][0] = r_walls_x_y[i][0];
+		walls_x_y[i][1] = r_walls_x_y[i][1];
+	}
+
+	for(i = 0; i < level_pellet_num; i++) {
+		pellets_x_y[i][0] = r_pellets_x_y[i][0];
+		pellets_x_y[i][1] = r_pellets_x_y[i][1];
+	}
+
+	en_l_y = rand_num(en_lim_top, en_lim_bot);
+	en_l_dir = 0;
+	en_r_y = rand_num(en_lim_top+10, en_lim_bot-10);
+	en_r_dir = 1;
+	level_pellet_collected = 0;
+
 }
 
 // Player Related Stuff //
@@ -923,7 +963,7 @@ void player_pellet_collision(void) {
 				pellets_x_y[i][0] = 200; //remove pellet//
 				pellets_x_y[i][1] = 200;
 				level_pellet_collected++;
-				//PSGSFXPlay(pickup_psg,SFX_CHANNEL3);
+				PSGSFXPlay(pickup_psg,SFX_CHANNEL2);
 				score += 10;
 			}
 	}
@@ -1579,13 +1619,11 @@ void main(void) {
 		// Level Complete // 
 		if(gamestate == 3) {
 			PSGStop();
+			level_fixed_current++;
+			if(gamemode == 1) { if(level_fixed_current > 10) { gamestate = 0; checkHiScore(); doGameEnd(); }}
 			doLivesScreen();
 			level_reset();
-			level_fixed_current++;
-			if(gamemode == 1) { 
-				if(level_fixed_current > 10) { gamestate = 0; checkHiScore(); doGameEnd(); }	
-				level_load(level_fixed_current,c); 
-			}
+			if(gamemode == 1) { level_load(level_fixed_current,c); }
 			if(gamemode == 0) { level_load(0,c); }
 		}
 
@@ -1596,10 +1634,19 @@ void main(void) {
 			reset_enemy_variables();
 			reset_player_variables();
 			doLivesScreen();
-			walls_draw();
-			if(gamemode == 0) { PSGPlay(random_world_psg); }
-			if(gamemode == 1) { PSGPlay(fixed_world_psg); }
-			if(level_counter == 0) { level_counter = 10; }
+			
+			if(gamemode == 0) { 
+				random_level_reset_arrays();
+				walls_draw(); 
+				PSGPlay(random_world_psg); 
+			}
+			if(gamemode == 1) { 
+				level_reset();
+				level_load(level_fixed_current,c);
+				PSGPlay(fixed_world_psg); 
+			}
+			// if(level_counter == 0) { level_counter = 10; }
+			level_counter = 10;
 			frame_counter = 0; 
 			gamestate = 1;
 		}

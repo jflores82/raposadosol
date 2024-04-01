@@ -14,6 +14,9 @@ levels designed using [Tiled](http://mapeditor.org)
 music done using [Furnace](https://tildearrow.org/furnace/)
 
 
+compiled using [SDCC](https://sdcc.sourceforge.net)
+
+
 To build it, you need a working copy of SDCC and SMSDevkit, with crt0, lib(SMSlib) and PSGlib inside their own folders, relative to main.c, if you're in a windows enviroment, then all you need to do is run build.bat.
 Otherwise you might need to execute the commands yourself. 
 
@@ -23,7 +26,7 @@ There's a PHP companion tool, to convert Tiled's CSV output to C Array used in t
 - Move the ship with the D-Pad
 - Hold Button 1 to use the speed boost.
 
-Your mission, choose you accept it is to recover all the satelittes without getting shot by the turrets, good luck.
+Your mission, choose you accept it is to recover all the sattelites without getting shot by the turrets, good luck.
 Oh yeah, there's a time limit also. oops.
 
 All the assets (code, graphics and music) were created by tibonev. 
@@ -31,6 +34,15 @@ Everything is licensed under the MIT License (check out LICENSE for more info).
 (c) 2024 tibonev.
 
 ### Version History: 
+
+V0.17 (01/04/24)
+- Updated to lastest version of PSGLib, fixed the ringing tone on Square Channel 2, after an sfx has played.
+- Altered death-loop situation, now the level always fully reset (all sattelites and time resets) at each death.
+- Fixed bug 'not loading "TIME:" tiles upon screen-reload after a death.
+
+V0.16 (28/03/24)
+- Fixed pickup sound bug (line 926 / can't enable channel 2 on that line?)
+- Fixed 'showing lives after fixed world is over' bug.
 
 V0.15 (26/03/24)
 - Added Fixed World Levels.
@@ -107,7 +119,11 @@ V0.01: (20/02/24)
 - Collision detection of both player-pellet / player-enemy shot are working
 
 ### To do:
-- sfx continue playing bug? primary focus, V15 has "pickup_psg" disabled.
 - Re-add Scrolling (how to shift all the collisions without slowing down?)
 - Separate code into files / makefile (will require re-write, not worth the effort?)
 - hi-score sram? (understand how to make sram work)
+
+
+
+
+

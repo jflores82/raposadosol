@@ -9,7 +9,7 @@ A _DABS size 0 flags 8 addr 0
 A _HOME size 0 flags 0 addr 0
 A _GSINIT size 0 flags 0 addr 0
 A _GSFINAL size 0 flags 0 addr 0
-A _BANK2 size 1CD5 flags 0 addr 0
+A _BANK2 size 1CDB flags 0 addr 0
 S _title_screen_psgcompr Def000000
 S _raposa_1_psg Def000902
 S _level_bg_psgcompr Def000D7D
@@ -29,18 +29,18 @@ S _level_bg_stmcompr Def001C07
 S _bg_stmcompr Def001C26
 S _en_shot_psg Def001C40
 S _menu_tick_psg Def001C56
-S _level_sprites_bin Def001C6B
-S _title_screen_1_bin Def001C7B
-S _title_screen_2_bin Def001C8B
-S _pickup_psg Def001C9B
-S _tiles_bin Def001CA7
-S _tiles2_bin Def001CB1
-S _tiles3_bin Def001CBB
-S _tiles4_bin Def001CC4
-S _bg_psgcompr Def001CCD
-S _bg2_bin Def001CD0
-S _level_bg_bin Def001CD2
-S _bg_bin Def001CD4
+S _pickup_psg Def001C6B
+S _level_sprites_bin Def001C7D
+S _title_screen_1_bin Def001C8D
+S _title_screen_2_bin Def001C9D
+S _tiles_bin Def001CAD
+S _tiles2_bin Def001CB7
+S _tiles3_bin Def001CC1
+S _tiles4_bin Def001CCA
+S _bg_psgcompr Def001CD3
+S _bg2_bin Def001CD6
+S _level_bg_bin Def001CD8
+S _bg_bin Def001CDA
 A _INITIALIZER size 0 flags 0 addr 0
 A _CABS size 0 flags 8 addr 0
 T 00 00 00
@@ -1219,55 +1219,57 @@ T 63 1C 00 38 38 38 38 38 38 3D 00
 R 00 00 07 00
 T 6B 1C 00
 R 00 00 07 00
-T 6B 1C 00 3F 0F 3E 2F 2A 15 0B 20 34 2D 27 01 19
+T 6B 1C 00 C9 4A D0 38 C3 4B 38 C9 4A 38 C3 4B 39
 R 00 00 07 00
-T 78 1C 00 2E 03 07
+T 78 1C 00 C7 56 DF 38 00
 R 00 00 07 00
-T 7B 1C 00
+T 7D 1C 00
 R 00 00 07 00
-T 7B 1C 00 00 00 00 01 05 15 02 03 03 06 0A 0B 0F
+T 7D 1C 00 3F 0F 3E 2F 2A 15 0B 20 34 2D 27 01 19
 R 00 00 07 00
-T 88 1C 00 2A 3F 3F
+T 8A 1C 00 2E 03 07
 R 00 00 07 00
-T 8B 1C 00
+T 8D 1C 00
 R 00 00 07 00
-T 8B 1C 00 00 00 00 01 15 02 03 03 06 07 0B 0B 0F
+T 8D 1C 00 00 00 00 01 05 15 02 03 03 06 0A 0B 0F
 R 00 00 07 00
-T 98 1C 00 2A 3F 3F
+T 9A 1C 00 2A 3F 3F
 R 00 00 07 00
-T 9B 1C 00
+T 9D 1C 00
 R 00 00 07 00
-T 9B 1C 00 E7 F0 3B E7 3B E7 3B E7 3B FF 3B 00
+T 9D 1C 00 00 00 00 01 15 02 03 03 06 07 0B 0B 0F
 R 00 00 07 00
-T A7 1C 00
+T AA 1C 00 2A 3F 3F
 R 00 00 07 00
-T A7 1C 00 15 20 2A 2F 2F 3E 00 11 0F 3F
+T AD 1C 00
 R 00 00 07 00
-T B1 1C 00
+T AD 1C 00 15 20 2A 2F 2F 3E 00 11 0F 3F
 R 00 00 07 00
-T B1 1C 00 15 01 2A 2F 2F 3E 00 04 38 3F
+T B7 1C 00
 R 00 00 07 00
-T BB 1C 00
+T B7 1C 00 15 01 2A 2F 2F 3E 00 04 38 3F
 R 00 00 07 00
-T BB 1C 00 15 00 2A 2F 2F 3E 2E 0B 3F
+T C1 1C 00
 R 00 00 07 00
-T C4 1C 00
+T C1 1C 00 15 00 2A 2F 2F 3E 2E 0B 3F
 R 00 00 07 00
-T C4 1C 00 15 10 2A 2F 2F 3E 00 3F 2E
+T CA 1C 00
 R 00 00 07 00
-T CD 1C 00
+T CA 1C 00 15 10 2A 2F 2F 3E 00 3F 2E
 R 00 00 07 00
-T CD 1C 00 01 00 00
+T D3 1C 00
 R 00 00 07 00
-T D0 1C 00
+T D3 1C 00 01 00 00
 R 00 00 07 00
-T D0 1C 00 00 2F
+T D6 1C 00
 R 00 00 07 00
-T D2 1C 00
+T D6 1C 00 00 2F
 R 00 00 07 00
-T D2 1C 00 00 2F
+T D8 1C 00
 R 00 00 07 00
-T D4 1C 00
+T D8 1C 00 00 2F
 R 00 00 07 00
-T D4 1C 00 00
+T DA 1C 00
+R 00 00 07 00
+T DA 1C 00 00
 R 00 00 07 00
