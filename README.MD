@@ -22,18 +22,28 @@ Otherwise you might need to execute the commands yourself.
 
 There's a PHP companion tool, to convert Tiled's CSV output to C Array used in the code.
 
-## Instructions:
-- Move the ship with the D-Pad
-- Hold Button 1 to use the speed boost.
-
-Your mission, choose you accept it is to recover all the sattelites without getting shot by the turrets, good luck.
-Oh yeah, there's a time limit also. oops.
-
 All the assets (code, graphics and music) were created by tibonev. 
 Everything is licensed under the MIT License (check out LICENSE for more info).
 (c) 2024 tibonev.
 
+## Game: 
+Your mission, choose you accept it is to recover all the sattelites without getting shot by the turrets, good luck.
+Oh yeah, there's a time limit also. oops.
+
+### Instructions:
+- Move the ship with the D-Pad
+- Hold Button 1 to use the speed boost.
+
+- Clean the SRAM (delete save high score) press PAUSE on the title screen.
+
 ### Version History: 
+
+V0.18 (08/04/24)
+- Added SDCC and SEGA Headers.
+- First version of SRAM Support. (saves highscore) (issue #2 on github).
+- Added function to clear SRAM by pressing pause on the title screen, it shows a screen to inform the player.
+- Updated build.bat to pad the rom to 64kb to be able to use SRAM.
+- Fixed issue #1 (player death not playing when gameover comes from a shot).
 
 V0.17 (01/04/24)
 - Updated to lastest version of PSGLib, fixed the ringing tone on Square Channel 2, after an sfx has played.
@@ -117,13 +127,3 @@ V0.01: (20/02/24)
 - Random Generated Levels
 - Player is controllable with 2 speeds
 - Collision detection of both player-pellet / player-enemy shot are working
-
-### To do:
-- Re-add Scrolling (how to shift all the collisions without slowing down?)
-- Separate code into files / makefile (will require re-write, not worth the effort?)
-- hi-score sram? (understand how to make sram work)
-
-
-
-
-

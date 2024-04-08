@@ -1253,6 +1253,28 @@ void drawTimer(void) {
 }
 
 // Text Screens // 
+void doClearSRAMScreen(void) {
+	int i = 0;
+	
+	clearHiScore();
+
+	black_bg_load();
+	SMS_setBGScrollX(0);
+	SMS_setBGScrollY(0);
+	vdp_clear_sprites();
+
+	SMS_autoSetUpTextRenderer();
+	SMS_printatXY(8,8, "DELETING HI-SCORE...");
+	SMS_printatXY(8,9, "PLEASE WAIT");
+
+	while(i < 150) { 
+		PSGFrame();
+		SMS_waitForVBlank();
+		i++;
+	}
+	doTitleScreen();
+}
+
 void doTitleScreen(void) {
 	int a = 0;
 	int p = 0;
@@ -1294,6 +1316,10 @@ void doTitleScreen(void) {
 	while(a == 0) { 
 		unsigned int key=SMS_getKeysStatus();
 		if(key & PORT_A_KEY_1)	{ a = 1; }
+		if (SMS_queryPauseRequested()) {
+    		SMS_resetPauseRequest();
+			doClearSRAMScreen();
+		}
 		PSGFrame();
 		SMS_waitForVBlank();
 		p++;
@@ -1449,31 +1475,32 @@ void doGameEnd(void) {
 	//return;
 }
 
-//struct sram { unsigned int points; };
-//struct sram *savegame = (struct sram*)(&SMS_SRAM);
+struct sram { unsigned int points; };
+struct sram *savegame = (struct sram*)(&SMS_SRAM);
 
 void checkHiScore(void) {
 	if(score > hiscore) { 
 		hiscore = score; // set the new hi-score //
-		//SMS_enableSRAM(); // enable save ram //
-		//savegame->points = hiscore;
-		//SMS_disableSRAM();
+		SMS_enableSRAM(); // enable save ram //
+		savegame->points = hiscore; // write the score to SRAM
+		SMS_disableSRAM();
 		return;
 	}
 	return;
 }
 
 void loadHiScore(void) {
-	//SMS_enableSRAM();
-	//hiscore = savegame->points;
-	//SMS_disableSRAM();
+	
+	SMS_enableSRAM();
+	hiscore = savegame->points;
+	SMS_disableSRAM();
 }
 
 void clearHiScore(void) { 
 	hiscore = 0;
-	//SMS_enableSRAM();
-	//savegame->points = hiscore;
-	//SMS_disableSRAM();
+	SMS_enableSRAM();
+	savegame->points = hiscore;
+	SMS_disableSRAM();
 }
 
 void doNewGame(void) { 
@@ -1511,7 +1538,7 @@ void main(void) {
 
 	vdp_vram_clear();
 
-	clearHiScore();
+	//clearHiScore();
 	loadHiScore();
 
 	black_bg_load();
@@ -1609,6 +1636,7 @@ void main(void) {
 		// Game Over //
 		if(gamestate == 2) { 
 			PSGStop();
+			explosion_draw();
 			checkHiScore();
 			doGameOver();
 			reset_enemy_variables();
@@ -1658,3 +1686,8 @@ void main(void) {
 
 	}
 }
+
+SMS_EMBED_SEGA_ROM_HEADER(9999,0); // code 9999 hopefully free, here this means 'homebrew'
+SMS_EMBED_SDSC_HEADER(0,17, 2024,4,4, "tibonev", "Raposa do Sol",
+  "Clone of Solar Fox.\n"
+"Built using devkitSMS & SMSlib - https://github.com/sverx/devkitSMS");
