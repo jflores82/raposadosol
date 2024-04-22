@@ -36,9 +36,9 @@ Everything is licensed under the MIT License (check out LICENSE for more info).
 Your mission, choose you accept it is to recover all the sattelites without getting shot by the turrets, good luck.
 Oh yeah, there's a time limit also. oops.
 
-![TitleScreen](http://classicames.com.br/temp/raposa1.png) ![Gameplay](http://classicgames.com.br/temp/raposa2.png)
+![TitleScreen](http://classicgames.com.br/temp/raposa1.png) ![Gameplay](http://classicgames.com.br/temp/raposa2.png)
 
-![Gameplay2](http://classicgames.com.br/temp/raposa3.png) ![Gameplay3](http://classicgames.com.br/raposa4.png)
+![Gameplay2](http://classicgames.com.br/temp/raposa3.png) ![Gameplay3](http://classicgames.com.br/temp/raposa4.png)
 
 ### Instructions:
 - Move the ship with the D-Pad
@@ -47,7 +47,7 @@ Oh yeah, there's a time limit also. oops.
 - To clear the SRAM (delete save high score) press PAUSE on the title screen.
 
 ### Version History: 
-V0.19 (/04/24)
+V0.19 (04/24)
 - Separated SRAM functions in its own file. (github issue #3).
 - Made randomseed a global variable to avoid having a fixed level on the first random world level, if the user goes straight to it. (github issue #5).
 - Added "time ran out" screen as suggest by sverx. (github issue #4).
