@@ -1,6 +1,7 @@
 XL3
 H A areas 20 global symbols
 M bank2
+O -mz80
 S .__.ABS. Def000000
 A _CODE size 0 flags 0 addr 0
 A _DATA size 0 flags 0 addr 0
@@ -10,37 +11,37 @@ A _HOME size 0 flags 0 addr 0
 A _GSINIT size 0 flags 0 addr 0
 A _GSFINAL size 0 flags 0 addr 0
 A _BANK2 size 1CDB flags 0 addr 0
-S _title_screen_psgcompr Def000000
-S _raposa_1_psg Def000902
-S _level_bg_psgcompr Def000D7D
-S _level_sprites_psgcompr Def001138
-S _gameover_jingle_psg Def00147A
-S _menu_music_psg Def00161A
-S _lives_psg Def001758
-S _fixed_world_psg Def001873
-S _random_world_psg Def001968
-S _timer_psgcompr Def001A10
-S _title_screen_stmcompr Def001A8D
-S _bg2_stmcompr Def001AFB
-S _tiles_psgcompr Def001B57
-S _bg2_psgcompr Def001BA0
-S _explosion_psg Def001BE7
-S _level_bg_stmcompr Def001C07
-S _bg_stmcompr Def001C26
-S _en_shot_psg Def001C40
+S _bg_bin Def001CDA
 S _menu_tick_psg Def001C56
-S _pickup_psg Def001C6B
-S _level_sprites_bin Def001C7D
 S _title_screen_1_bin Def001C8D
 S _title_screen_2_bin Def001C9D
-S _tiles_bin Def001CAD
+S _timer_psgcompr Def001A10
+S _tiles_psgcompr Def001B57
 S _tiles2_bin Def001CB7
 S _tiles3_bin Def001CC1
 S _tiles4_bin Def001CCA
+S _random_world_psg Def001968
+S _pickup_psg Def001C6B
+S _tiles_bin Def001CAD
+S _raposa_1_psg Def000902
+S _fixed_world_psg Def001873
+S _bg2_psgcompr Def001BA0
+S _level_bg_psgcompr Def000D7D
+S _explosion_psg Def001BE7
+S _title_screen_psgcompr Def000000
+S _level_sprites_psgcompr Def001138
+S _lives_psg Def001758
+S _bg2_stmcompr Def001AFB
 S _bg_psgcompr Def001CD3
 S _bg2_bin Def001CD6
+S _level_bg_stmcompr Def001C07
+S _title_screen_stmcompr Def001A8D
+S _gameover_jingle_psg Def00147A
 S _level_bg_bin Def001CD8
-S _bg_bin Def001CDA
+S _en_shot_psg Def001C40
+S _level_sprites_bin Def001C7D
+S _bg_stmcompr Def001C26
+S _menu_music_psg Def00161A
 A _INITIALIZER size 0 flags 0 addr 0
 A _CABS size 0 flags 8 addr 0
 T 00 00 00

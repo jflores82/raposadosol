@@ -1,7 +1,8 @@
-// Silver Fox //
+// Raposa do Sol //
 // Coded by tibonev using sverx's sms devkit //
 // tibonev: http://classicgames.com.br //
 // All assets, code, music etc: made by tibonev //
+// Check README.MD for more information //
 
 // SDCC Includes //
 #include <stdio.h>
@@ -13,8 +14,11 @@
 #include "PSGlib/PSGlib.h"
 
 #include "bank2.h" // Assets (gfx and music) //
-
+#include "bank3.h" // PCM Sample "Raposa do Sol" //
+#include "bank4.h" // PCM SAmple "Game Over Yeah" //
 #include "vdp.h" // VDP Stuff //
+#include "sram.h" // SRAM Stuff //
+#include "fxsample.h" // PCM Play //
 
 // Init Variables //
 unsigned int pl_x = 100; 			// player x axis position //
@@ -70,6 +74,29 @@ int wall_pellet_col = 0;
 unsigned int level_counter = 0;
 unsigned int frame_counter = 0;
 
+unsigned int randomseed = 30; // Used to seed the rand command //
+
+const unsigned char psgInit[] =
+{
+	0x9F, 0xBF, 0xDF, 0xFF, 0x81, 0x00, 0xA1, 0x00, 0xC1, 0x00, 0xE0
+};
+
+void playPCM(int sample) { 
+	initPSG(psgInit);
+	
+	if(sample == 0) { 
+		SMS_mapROMBank(rapt_pcmenc_bank); 
+		PlaySample(rapt_pcmenc); 
+	}
+	if(sample == 1) { 
+		SMS_mapROMBank(rapg_pcmenc_bank); 
+		PlaySample(rapg_pcmenc); 
+	}
+	
+}
+
+void doTitleScreen(void);
+
 // Tools and Resets //
 int rand_num(int lb, int ub) {
 	int ret;
@@ -108,28 +135,11 @@ void reset_level_arrays(void) {
 
 // Backgrounds //
 void black_bg_load(void) { 
+	SMS_mapROMBank(2);
 	SMS_loadPSGaidencompressedTiles(bg_psgcompr, 0); // files, tilefrom
 	SMS_loadSTMcompressedTileMap(0,0,bg_stmcompr); // x,y, files
 	SMS_loadBGPalette(bg_bin); // palette file //
 	SMS_setBackdropColor (RGB(0,0,0));
-}
-
-void bg_scroll(void) {
-	
-	switch(pl_dir) {
-		case 0:
-			if(pl_spd != 0) { SMS_setBGScrollY(bg_scroll_y--); }
-		break;
-		case 1:
-			if(pl_spd != 0) { SMS_setBGScrollX(bg_scroll_x++); }
-		break;
-		case 2:
-			if(pl_spd != 0) { SMS_setBGScrollX(bg_scroll_x--); }
-		break;
-		case 3:
-			if(pl_spd != 0) { SMS_setBGScrollY(bg_scroll_y++); }
-		break;
-	}
 }
 
 void wall_pellet_collision(int wall_x, int wall_y) { 
@@ -174,6 +184,7 @@ void pellets_draw(void) {
 
 // Sprite Tiles
 void level_load_sprites(void) {
+	SMS_mapROMBank(2);
 	SMS_loadPSGaidencompressedTiles(level_sprites_psgcompr, 256);
 	SMS_loadSpritePalette(level_sprites_bin);
 }
@@ -182,10 +193,10 @@ void level_load_sprites(void) {
 void level_bg_load(void) {
 	int x;
 	int y;
+	SMS_mapROMBank(2);
 	SMS_loadPSGaidencompressedTiles(tiles_psgcompr, 100); // files, tilefrom
-	//SMS_loadSTMcompressedTileMap(0,0,bg2_stmcompr); // x,y, files
 	int tiles_pallete = 1;
-	if(gamemode == 0) { tiles_pallete = rand_num(1,4); }
+	if(gamemode == 0) { tiles_pallete = rand_num(1,4); SMS_mapROMBank(2); }
 	switch(tiles_pallete) { 
 		case 1:
 			SMS_loadBGPalette(tiles_bin);
@@ -202,12 +213,13 @@ void level_bg_load(void) {
 	}
 
 	if(gamemode == 1) { 
+		SMS_mapROMBank(2);
 		if(level_fixed_current == 10) { SMS_loadBGPalette(tiles4_bin); }
 		if(level_fixed_current < 10) { SMS_loadBGPalette(tiles3_bin); }
 		if(level_fixed_current < 7) { SMS_loadBGPalette(tiles2_bin); }
 		if(level_fixed_current < 4) { SMS_loadBGPalette(tiles_bin); }
 	}
-	
+	SMS_mapROMBank(2);
 	SMS_loadPSGaidencompressedTiles(timer_psgcompr,200); // timer tiles //
 
 	// Background Color //
@@ -269,7 +281,7 @@ void level_load(int level, int seed) {
 	SMS_setTileatXY(7,22,214);  
 		
 	reset_level_arrays();
-
+	SMS_mapROMBank(2);
 	if(gamemode == 0) { PSGPlay(random_world_psg); }
 	if(gamemode == 1) { PSGPlay(fixed_world_psg); }
 
@@ -800,7 +812,6 @@ void level_load(int level, int seed) {
 			w_x = rand_num(pl_lim_left, pl_lim_right);
 			w_y = rand_num(pl_lim_top, pl_lim_bottom);
 			wall_pellet_collision(w_x, w_y);
-			//wall_pellet_col = 1;
 			if(wall_pellet_col == 0) { 
 				walls_x_y[i][0] = w_x;
 				walls_x_y[i][1] = w_y;
@@ -827,7 +838,6 @@ void level_reset(void) {
 
 void random_level_reset_arrays(void) {
 	int i;
-
 	
 	for(i = 0; i < level_walls_num; i++) {
 		walls_x_y[i][0] = r_walls_x_y[i][0];
@@ -891,7 +901,6 @@ void player_draw(void) {
 	SMS_addSprite(pl_x + 8, pl_y,     tile_2);
 	SMS_addSprite(pl_x,     pl_y + 8, tile_3);
 	SMS_addSprite(pl_x + 8, pl_y + 8, tile_4);
-
 }
 
 void player_movement(void) {
@@ -963,6 +972,7 @@ void player_pellet_collision(void) {
 				pellets_x_y[i][0] = 200; //remove pellet//
 				pellets_x_y[i][1] = 200;
 				level_pellet_collected++;
+				SMS_mapROMBank(2);
 				PSGSFXPlay(pickup_psg,SFX_CHANNEL2);
 				score += 10;
 			}
@@ -1070,6 +1080,7 @@ void turrets_shoot(int turret) {
 				break;
 			}
 			SMS_addSprite(en_s_l_x, en_s_l_y, 276);
+			SMS_mapROMBank(2);
 			PSGSFXPlay(en_shot_psg,SFX_CHANNEL3);
 			en_s_l = 1;
 		}
@@ -1087,6 +1098,7 @@ void turrets_shoot(int turret) {
 				break;
 			}
 			SMS_addSprite(en_s_r_x, en_s_r_y, 276);
+			SMS_mapROMBank(2);
 			PSGSFXPlay(en_shot_psg,SFX_CHANNEL3);
 			en_s_r = 1;
 		}
@@ -1123,6 +1135,7 @@ void explosion_draw(void) {
 	int tile4e = 295;
 
 	int i = 0;
+	SMS_mapROMBank(2);
 	PSGSFXPlay(explosion_psg,SFX_CHANNEL3);
 	for(int a = 0; a < 5; a++) { 
 		SMS_initSprites();
@@ -1158,7 +1171,6 @@ void explosion_draw(void) {
 	}
 	PSGSFXStop();
 	return;
-
 }
 
 // Timer on Screen //
@@ -1278,20 +1290,13 @@ void doClearSRAMScreen(void) {
 void doTitleScreen(void) {
 	int a = 0;
 	int p = 0;
-	//char temp[5];
 	
 	black_bg_load();
 	SMS_setBGScrollX(0);
 	SMS_setBGScrollY(0);
 	vdp_clear_sprites();
-	//SMS_autoSetUpTextRenderer();
-	//SMS_printatXY(10,11,"RAPOSA DO SOL");
-	//SMS_printatXY(11,15,"PRESS START");
 
-	//SMS_printatXY(11,2,"HI:");
-	//sprintf((char*)temp,"%u",hiscore);
-	//SMS_printatXY(14,2, temp);
-
+	SMS_mapROMBank(2);
 	PSGPlay(raposa_1_psg);
 
 	SMS_loadPSGaidencompressedTiles(title_screen_psgcompr, 0); // files, tilefrom
@@ -1309,8 +1314,6 @@ void doTitleScreen(void) {
 	SMS_setBGPaletteColor(11, RGB(3,0,0));
 	SMS_setBGPaletteColor(12, RGB(3,0,0));
 
-	
-
 	SMS_displayOn();
 	
 	while(a == 0) { 
@@ -1320,8 +1323,14 @@ void doTitleScreen(void) {
     		SMS_resetPauseRequest();
 			doClearSRAMScreen();
 		}
+		
+		// For the random_level_generator //
+		randomseed++;
+		if(randomseed == 25600) { randomseed = 0; }
+		
 		PSGFrame();
 		SMS_waitForVBlank();
+			
 		p++;
 
 		if(p == 25) {  
@@ -1349,7 +1358,6 @@ void doTitleScreen(void) {
 			SMS_setBGPaletteColor(12, RGB(3,0,0));
 			p = 0; 
 		}
-
 	}
 	PSGStop();
 	level_load_sprites();
@@ -1373,6 +1381,7 @@ void doMenuScreen(void) {
 	while(a == 0) {
 		unsigned int key=SMS_getKeysStatus();
 		if(key & PORT_A_KEY_UP && gamemode !=1) { 
+			SMS_mapROMBank(2);
 			PSGSFXPlay(menu_tick_psg,SFX_CHANNEL2);
 			gamemode = 1;
 			SMS_printatXY(10,10,"> FIXED WORLD");
@@ -1380,6 +1389,7 @@ void doMenuScreen(void) {
 		}
 		if(key & PORT_A_KEY_DOWN && gamemode !=0) {
 			gamemode = 0;
+			SMS_mapROMBank(2);
 			PSGSFXPlay(menu_tick_psg,SFX_CHANNEL2);
 			SMS_printatXY(10,10,"  FIXED WORLD");
 			SMS_printatXY(10,12,"> RANDOM WORLD");
@@ -1391,7 +1401,6 @@ void doMenuScreen(void) {
 	}
 	PSGStop();
 	return;
-
 }
 
 void doLivesScreen(void) { 
@@ -1407,6 +1416,7 @@ void doLivesScreen(void) {
 	SMS_setNextTileatXY(7,10);
 	SMS_setTile(lives_tile);
 	PSGSFXStop();
+	SMS_mapROMBank(2);
 	PSGPlay(lives_psg);
 	while(i < 150) { 
 		PSGFrame();
@@ -1419,12 +1429,35 @@ void doLivesScreen(void) {
 	return;
 }
 
+void doTimeOutScreen(void) { 
+	int i = 0;
+	PSGStop();
+	PSGSFXStop();
+	black_bg_load();
+	vdp_clear_sprites();
+	SMS_setBGScrollX(0);
+	SMS_setBGScrollY(0);
+	SMS_autoSetUpTextRenderer();
+	SMS_printatXY(10,10,"TIME OUT!");
+	SMS_setNextTileatXY(7,10);
+	
+	while(i < 120) { 
+		SMS_waitForVBlank();
+		i++;
+	}
+	
+	level_bg_load();
+	level_load_sprites();
+	return;
+
+}
+
 void doGameOver(void) {
 	int a = 0;
 	char temp[5];
-
+	PSGStop();
+	PSGSFXStop();
 	SMS_displayOff();
-	// vdp_vram_clear();
 	black_bg_load();
 	vdp_clear_sprites();
 	SMS_setBGScrollX(0);
@@ -1437,6 +1470,10 @@ void doGameOver(void) {
 	SMS_printatXY(11,2,"HI:");
 	sprintf((char*)temp,"%u",hiscore);
 	SMS_printatXY(14,2, temp);
+	
+	playPCM(1);
+	//PSGStop();
+	SMS_mapROMBank(2);
 	PSGPlay(gameover_jingle_psg);
 	while(a < 200) { 
 		SMS_waitForVBlank();
@@ -1459,48 +1496,13 @@ void doGameEnd(void) {
 	SMS_printatXY(7,5,"ALL SATELLITES HAVE");
 	SMS_printatXY(7,6,"BEEN RECOVERED");
 	SMS_printatXY(5,10,"THIS IS THE HAPPY ENDING");
-
-	// PSGPlay(raposa_1_psg);
-
 	SMS_displayOn();
 	
 	while(a == 0) { 
-		//unsigned int key=SMS_getKeysStatus();
-		//if(key & PORT_A_KEY_1)	{ a = 1; }
 		PSGFrame();
 		SMS_waitForVBlank();
 
 	}
-	//PSGStop();
-	//return;
-}
-
-struct sram { unsigned int points; };
-struct sram *savegame = (struct sram*)(&SMS_SRAM);
-
-void checkHiScore(void) {
-	if(score > hiscore) { 
-		hiscore = score; // set the new hi-score //
-		SMS_enableSRAM(); // enable save ram //
-		savegame->points = hiscore; // write the score to SRAM
-		SMS_disableSRAM();
-		return;
-	}
-	return;
-}
-
-void loadHiScore(void) {
-	
-	SMS_enableSRAM();
-	hiscore = savegame->points;
-	SMS_disableSRAM();
-}
-
-void clearHiScore(void) { 
-	hiscore = 0;
-	SMS_enableSRAM();
-	savegame->points = hiscore;
-	SMS_disableSRAM();
 }
 
 void doNewGame(void) { 
@@ -1509,7 +1511,6 @@ void doNewGame(void) {
 	reset_level_arrays();
 	reset_enemy_variables();
 	reset_player_variables();
-
 }
 
 void checkPause(void) {
@@ -1522,6 +1523,7 @@ void checkPause(void) {
 			PSGSFXStop();
 			gamestate = 5; 
 		} else { 
+			SMS_mapROMBank(2);
 			if(gamemode == 0) { PSGPlay(random_world_psg); }
 			if(gamemode == 1) { PSGPlay(fixed_world_psg); }
 			gamestate = 1; 
@@ -1532,24 +1534,22 @@ void checkPause(void) {
 // Main Program //
 void main(void) {
 
-	int c = 30; // Used to seed the rand command //
-
 	vdp_config();
-
 	vdp_vram_clear();
 
-	//clearHiScore();
-	loadHiScore();
+	hiscore = loadHiScore();
 
 	black_bg_load();
-
+	
+	playPCM(0);
+	SMS_mapROMBank(2);
 	doTitleScreen();
 	doMenuScreen();
 	doLivesScreen();
 		
 	SMS_displayOn();
 
-	level_load(gamemode,c); // load the first level //
+	level_load(gamemode,randomseed); // load the first level //
 	SMS_resetPauseRequest();
 	PSGSFXStop();
 
@@ -1589,8 +1589,8 @@ void main(void) {
 			
 					
 			// For the random_level_generator //
-			c++;
-			if(c == 25600) { c = 0; }
+			randomseed++;
+			if(randomseed == 25600) { randomseed = 0; }
 
 			// timer
 			frame_counter++;
@@ -1601,7 +1601,25 @@ void main(void) {
 			
 			if(level_counter == 0) { 
 				lives--;
-				gamestate = 4;
+				doTimeOutScreen();
+				reset_enemy_variables();
+				reset_player_variables();
+				doLivesScreen();
+			
+				if(gamemode == 0) { 
+					random_level_reset_arrays();
+					walls_draw(); 
+					PSGPlay(random_world_psg); 
+				}
+				if(gamemode == 1) { 
+					level_reset();
+					level_load(level_fixed_current,randomseed);
+					PSGPlay(fixed_world_psg); 
+				}
+				level_counter = 10;
+				frame_counter = 0; 
+				gamestate = 1;
+				
 			}
 						
 			// SMS Loop Stuff //
@@ -1629,7 +1647,7 @@ void main(void) {
 			doMenuScreen();
 			doLivesScreen();
 			level_reset();
-			level_load(gamemode,c);
+			level_load(gamemode,randomseed);
 			gamestate = 1;
 		}
 
@@ -1637,7 +1655,7 @@ void main(void) {
 		if(gamestate == 2) { 
 			PSGStop();
 			explosion_draw();
-			checkHiScore();
+			checkHiScore(hiscore, score);
 			doGameOver();
 			reset_enemy_variables();
 			reset_player_variables();
@@ -1648,11 +1666,11 @@ void main(void) {
 		if(gamestate == 3) {
 			PSGStop();
 			level_fixed_current++;
-			if(gamemode == 1) { if(level_fixed_current > 10) { gamestate = 0; checkHiScore(); doGameEnd(); }}
+			if(gamemode == 1) { if(level_fixed_current > 10) { gamestate = 0; checkHiScore(hiscore, score); doGameEnd(); }}
 			doLivesScreen();
 			level_reset();
-			if(gamemode == 1) { level_load(level_fixed_current,c); }
-			if(gamemode == 0) { level_load(0,c); }
+			if(gamemode == 1) { level_load(level_fixed_current,randomseed); }
+			if(gamemode == 0) { level_load(0,randomseed); }
 		}
 
 		// Player Died // 
@@ -1670,10 +1688,9 @@ void main(void) {
 			}
 			if(gamemode == 1) { 
 				level_reset();
-				level_load(level_fixed_current,c);
+				level_load(level_fixed_current,randomseed);
 				PSGPlay(fixed_world_psg); 
 			}
-			// if(level_counter == 0) { level_counter = 10; }
 			level_counter = 10;
 			frame_counter = 0; 
 			gamestate = 1;

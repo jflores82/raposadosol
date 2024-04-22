@@ -8,6 +8,12 @@ Coded by [tibonev](http://classicgames.com.br)
 using the [SMSDevkit by sverx](https://github.com/sverx/devkitSMS)
 
 
+also using [sms_fxsample by kusfo](https://github.com/kusfo/sms-fxsample)
+
+
+and [pcmenc by Maxim](https://github.com/kusfo/sms-fxsample)
+
+
 levels designed using [Tiled](http://mapeditor.org)
 
 
@@ -30,13 +36,22 @@ Everything is licensed under the MIT License (check out LICENSE for more info).
 Your mission, choose you accept it is to recover all the sattelites without getting shot by the turrets, good luck.
 Oh yeah, there's a time limit also. oops.
 
+![TitleScreen](http://classicames.com.br/temp/raposa1.png) ![Gameplay](http://classicgames.com.br/temp/raposa2.png)
+
+![Gameplay2](http://classicgames.com.br/temp/raposa3.png) ![Gameplay3](http://classicgames.com.br/raposa4.png)
+
 ### Instructions:
 - Move the ship with the D-Pad
 - Hold Button 1 to use the speed boost.
 
-- Clean the SRAM (delete save high score) press PAUSE on the title screen.
+- To clear the SRAM (delete save high score) press PAUSE on the title screen.
 
 ### Version History: 
+V0.19 (/04/24)
+- Separated SRAM functions in its own file. (github issue #3).
+- Made randomseed a global variable to avoid having a fixed level on the first random world level, if the user goes straight to it. (github issue #5).
+- Added "time ran out" screen as suggest by sverx. (github issue #4).
+- Added voice samples before titlescreen and to game over screen (github issue #6).
 
 V0.18 (08/04/24)
 - Added SDCC and SEGA Headers.
@@ -127,3 +142,9 @@ V0.01: (20/02/24)
 - Random Generated Levels
 - Player is controllable with 2 speeds
 - Collision detection of both player-pellet / player-enemy shot are working
+
+## Verified to work on: 
+- Emulicious Emulator
+- Kega Fusion Emulator
+- SMS I PAL-M 60hz
+- SMS I PAL 50hz
