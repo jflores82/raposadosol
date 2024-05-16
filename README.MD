@@ -47,6 +47,11 @@ Oh yeah, there's a time limit also. oops.
 - To clear the SRAM (delete save high score) press PAUSE on the title screen.
 
 ### Version History: 
+V0.20 (05/24)
+- Fixed issue #8 - add hi-score to show on menu screen. 
+- Fixed github issue #9 - hanging sound on endscreen. (i had forgot to set PSGStop(), fixed.)
+- Fixed issue #10 - white border appearing on the text only screens. (set the correct pallete, column seems to be using sprite pallete color 0, since there are no sprites on screen, easy fix).
+
 V0.19 (04/24)
 - Separated SRAM functions in its own file. (github issue #3).
 - Made randomseed a global variable to avoid having a fixed level on the first random world level, if the user goes straight to it. (github issue #5).

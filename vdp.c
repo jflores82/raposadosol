@@ -12,6 +12,7 @@
 // VDP Stuff //
 void vdp_config(void) {
 	SMS_VDPturnOnFeature(VDPFEATURE_HIDEFIRSTCOL);
+	SMS_VDPturnOnFeature(VDPFEATURE_LEFTCOLBLANK);
 	SMS_VRAMmemsetW(0, 0x0000, 16384); // CLEAR VRAM
 	// SMS_useFirstHalfTilesforSprites(true); // not used atm //
 }

@@ -193,6 +193,7 @@ void level_load_sprites(void) {
 void level_bg_load(void) {
 	int x;
 	int y;
+	SMS_setBackdropColor (RGB(0,0,0));
 	SMS_mapROMBank(2);
 	SMS_loadPSGaidencompressedTiles(tiles_psgcompr, 100); // files, tilefrom
 	int tiles_pallete = 1;
@@ -272,6 +273,7 @@ void level_load(int level, int seed) {
 	int j = 0;
 	level_counter = 10;
 	frame_counter = 0;
+	SMS_setBackdropColor (RGB(0,0,0));
 	level_bg_load(); // Load the Background Tiles //
 
 	SMS_setTileatXY(3,22,210);  
@@ -1269,13 +1271,13 @@ void doClearSRAMScreen(void) {
 	int i = 0;
 	
 	clearHiScore();
-
 	black_bg_load();
 	SMS_setBGScrollX(0);
 	SMS_setBGScrollY(0);
 	vdp_clear_sprites();
 
 	SMS_autoSetUpTextRenderer();
+	SMS_setBackdropColor (RGB(0,0,0));
 	SMS_printatXY(8,8, "DELETING HI-SCORE...");
 	SMS_printatXY(8,9, "PLEASE WAIT");
 
@@ -1289,8 +1291,7 @@ void doClearSRAMScreen(void) {
 
 void doTitleScreen(void) {
 	int a = 0;
-	int p = 0;
-	
+	int p = 0;	
 	black_bg_load();
 	SMS_setBGScrollX(0);
 	SMS_setBGScrollY(0);
@@ -1366,13 +1367,19 @@ void doTitleScreen(void) {
 
 void doMenuScreen(void) { 
 	int a = 0;
+	char temp[5];
 	gamemode = 1;
-
 	black_bg_load();
 	vdp_clear_sprites();
 	SMS_setBGScrollX(0);
 	SMS_setBGScrollY(0);
 	SMS_autoSetUpTextRenderer();
+	SMS_setSpritePaletteColor(0, RGB(0,0,0));
+
+	SMS_printatXY(11,2,"HI:");
+	sprintf((char*)temp,"%u",hiscore);
+	SMS_printatXY(14,2, temp);
+
 	SMS_printatXY(10,8, "SELECT GAME MODE");
 	SMS_printatXY(10,10,"> FIXED WORLD");
 	SMS_printatXY(10,12,"  RANDOM WORLD");
@@ -1406,12 +1413,12 @@ void doMenuScreen(void) {
 void doLivesScreen(void) { 
 	int i = 0;
 	int lives_tile = lives + 16;
-	
 	black_bg_load();
 	vdp_clear_sprites();
 	SMS_setBGScrollX(0);
 	SMS_setBGScrollY(0);
 	SMS_autoSetUpTextRenderer();
+	SMS_setSpritePaletteColor(0, RGB(0,0,0));
 	SMS_printatXY(10,10,"SHIP(S) REMAINING");
 	SMS_setNextTileatXY(7,10);
 	SMS_setTile(lives_tile);
@@ -1438,6 +1445,7 @@ void doTimeOutScreen(void) {
 	SMS_setBGScrollX(0);
 	SMS_setBGScrollY(0);
 	SMS_autoSetUpTextRenderer();
+	SMS_setSpritePaletteColor(0, RGB(0,0,0));
 	SMS_printatXY(10,10,"TIME OUT!");
 	SMS_setNextTileatXY(7,10);
 	
@@ -1463,6 +1471,7 @@ void doGameOver(void) {
 	SMS_setBGScrollX(0);
 	SMS_setBGScrollY(0);
 	SMS_autoSetUpTextRenderer();
+	SMS_setSpritePaletteColor(0, RGB(0,0,0));
 	SMS_printatXY(11,5,"GAME OVER");
 	SMS_printatXY(11,10, "SCORE");
 	sprintf((char*)temp,"%u",score);
@@ -1487,12 +1496,14 @@ void doGameOver(void) {
 
 void doGameEnd(void) {
 	int a = 0;
-	
+	PSGStop();
+	PSGSFXStop();
 	black_bg_load();
 	SMS_setBGScrollX(0);
 	SMS_setBGScrollY(0);
 	vdp_clear_sprites();
 	SMS_autoSetUpTextRenderer();
+	SMS_setSpritePaletteColor(0, RGB(0,0,0));
 	SMS_printatXY(7,5,"ALL SATELLITES HAVE");
 	SMS_printatXY(7,6,"BEEN RECOVERED");
 	SMS_printatXY(5,10,"THIS IS THE HAPPY ENDING");
@@ -1536,7 +1547,7 @@ void main(void) {
 
 	vdp_config();
 	vdp_vram_clear();
-
+		
 	hiscore = loadHiScore();
 
 	black_bg_load();
